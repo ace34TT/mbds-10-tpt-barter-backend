@@ -30,8 +30,8 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-app.use("/api/auth/", AuthRoutes);
-app.use("/api/categories/", CategoryRoutes);
+app.use("/api/auth", AuthRoutes);
+app.use("/api/categories", CategoryRoutes);
 app.use("/api/chats", ChatRoutes);
 app.use("/api/notifications", NotificationRoutes);
 app.use("/api/objects", ObjectRoutes);
