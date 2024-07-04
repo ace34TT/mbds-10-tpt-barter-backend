@@ -13,8 +13,80 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Role {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  Users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  name  String
-  email String  @unique
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  username  String
+  password  String
+  role      Role     @relation(fields: [roleId], references: [id])
+  roleId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Objects   Object[]
+  Posts     Post[]
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  title   String
+  Objects Object[]
+}
+
+model Object {
+  id           Int         @id @default(autoincrement())
+  name         String
+  category     Category    @relation(fields: [categoryId], references: [id])
+  categoryId   Int
+  description  String
+  owner        User        @relation(fields: [ownerId], references: [id])
+  ownerId      Int
+  photos       String[]
+  post         Post?       @relation(fields: [postId], references: [id])
+  postId       Int?
+  Suggestoin   Suggestoin? @relation(fields: [suggestoinId], references: [id])
+  suggestoinId Int?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+enum PostStatus {
+  ACTIVE
+  CLOSED
+  SUSPENDED
+}
+
+model Post {
+  id          Int          @id @default(autoincrement())
+  author      User         @relation(fields: [authorId], references: [id])
+  authorId    Int
+  Objects     Object[]
+  Suggestoins Suggestoin[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+enum SuggestoinStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model Suggestoin {
+  id              Int              @id @default(autoincrement())
+  status          SuggestoinStatus
+  post            Post             @relation(fields: [postId], references: [id])
+  postId          Int
+  suggestedObject Object[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
