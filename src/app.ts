@@ -7,6 +7,7 @@ import { NotificationRoutes } from "./routes/notiification.routes";
 import { ObjectRoutes } from "./routes/object.routes";
 import { UserRoutes } from "./routes/user.routes";
 import { ReportRoutes } from "./routes/report.routes";
+import Protect from "./middlewares/auth"
 
 const app = express();
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -22,6 +23,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 // !
 app.get("/", (req: Request, res: Response) => {
@@ -30,12 +33,12 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-app.use("/api/auth", AuthRoutes);
+app.use("/api/auth",AuthRoutes);
 app.use("/api/categories", CategoryRoutes);
 app.use("/api/chats", ChatRoutes);
 app.use("/api/notifications", NotificationRoutes);
 app.use("/api/objects", ObjectRoutes);
 app.use("/api/reports", ReportRoutes);
-app.use("/api/users", UserRoutes);
+app.use("/api/users",Protect,UserRoutes);
 
 export default app;
