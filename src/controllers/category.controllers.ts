@@ -70,11 +70,6 @@ export const updateCategoryHandler = async (req: Request, res: Response) => {
     if (titleExists && existingCategory.title !== title) {
       return res.status(409).json({ error: "Title already exists" });
     }
-    
-    const category = await getCategoryById(Number(id));
-    if (!category) {
-      return res.status(404).json({ error: "Category not found" });
-    }
 
     const updatedCategory = await updateCategory(Number(id), title);
     return res.status(200).json(updatedCategory);
