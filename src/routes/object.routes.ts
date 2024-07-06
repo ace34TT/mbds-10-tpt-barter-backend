@@ -6,7 +6,9 @@ import multer from 'multer';
 import fs from 'fs';
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' }); 
+const upload = multer({
+    storage: multer.memoryStorage(),
+  }); 
 
 router.get("/", getObjectsHandler);
 router.get("/:id", getObjectByIdHandler);

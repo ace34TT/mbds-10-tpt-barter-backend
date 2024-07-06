@@ -1,9 +1,10 @@
 import { google } from 'googleapis';
 import * as fs from 'fs';
 import drive from '../configs/google.drive.configs';
-
+import stream from "stream";
 export const uploadFileToDrive = async (files: Express.Multer.File[]): Promise<string[]> => {
   try {
+    
     const fileUrls: string[] = [];
     for (const file of files) {
       const response = await drive.files.create({
@@ -14,7 +15,7 @@ export const uploadFileToDrive = async (files: Express.Multer.File[]): Promise<s
         },
         media: {
           mimeType: file.mimetype,
-          body: fs.createReadStream(file.path),
+          body: new stream.PassThrough().end(file.buffer),
         },
       });
 
