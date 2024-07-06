@@ -13,3 +13,5 @@ export async function runPrisma() {
     await prisma.$disconnect();
   }
 }
+
+export default prisma;
