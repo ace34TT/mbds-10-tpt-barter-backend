@@ -30,12 +30,12 @@ export const addPostReport = async (usermakereport: IUserReport, objetReport: IO
     }
 };
 
-export const updateUserReport = async (id: string, motif: string): Promise<IReport | null> => {
-    return await Report.findByIdAndUpdate(id, { motif, updatedAt: new Date() }, { new: true });
+export const updateUserReport = async (id: string, statut: string): Promise<IReport | null> => {
+    return await Report.findByIdAndUpdate(id, { statut, updatedAt: new Date() }, { new: true });
 };
 
-export const updatePostReport = async (id: string, motif: string): Promise<IReport | null> => {
-    return await Report.findByIdAndUpdate(id, { motif, updatedAt: new Date() }, { new: true });
+export const updatePostReport = async (id: string, statut: string): Promise<IReport | null> => {
+    return await Report.findByIdAndUpdate(id, { statut, updatedAt: new Date() }, { new: true });
 };
 
 export const getReports = async (type?: 'user' | 'post'): Promise<IReport[]> => {

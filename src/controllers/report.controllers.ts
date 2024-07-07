@@ -41,13 +41,13 @@ export const updateUserReportHandler = async (req: Request, res: Response) => {
   }
   try {
     const { id } = req.params;
-    const { motif } = req.body;
+    const { statut } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    const report = await reportService.updateUserReport(id, motif);
+    const report = await reportService.updateUserReport(id, statut);
     if (report) {
       res.status(200).json(report);
     } else {
@@ -65,13 +65,13 @@ export const updatePostReportHandler = async (req: Request, res: Response) => {
   }
   try {
     const { id } = req.params;
-    const { motif } = req.body;
+    const { statut } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    const report = await reportService.updatePostReport(id, motif);
+    const report = await reportService.updatePostReport(id, statut);
     if (report) {
       res.status(200).json(report);
     } else {

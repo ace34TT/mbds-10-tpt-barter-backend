@@ -27,7 +27,7 @@ const UserReportSchema: Schema = new Schema({
     id: { type: Number, required: true },
     username: { type: String, required: true },
     adresse: { type: String, required: true },
-    email: { type: String, unique: true, sparse: true, match: /.+\@.+\..+/ }
+    email: { type: String, sparse: true, match: /.+\@.+\..+/ }
 });
 
 const ObjetReportSchema: Schema = new Schema({
