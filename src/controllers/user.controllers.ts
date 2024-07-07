@@ -56,7 +56,7 @@ export const updateUser = async (req: Request, res: Response) => {
       where: { id: Number(id) },
       data: { name, email, username,roleId },
     });
-    res.json(user);
+    res.json({message:"mis à jour effectué" ,user});
   } catch (error) {
     res.status(500).json({ error});
   }

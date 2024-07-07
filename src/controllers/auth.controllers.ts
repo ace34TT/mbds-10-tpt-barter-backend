@@ -21,15 +21,13 @@ export const register = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Créer un nouvel utilisateur
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        username,
-        password: hashedPassword,
-        roleId,
-      },
-    });
+    const user = await prisma.user.create( {data: {
+      name,
+      email,
+      username,
+      password: hashedPassword,
+      roleId,
+    }},);
 
     res.status(201).json(user);
   } catch (error) {
@@ -57,7 +55,7 @@ export const login = async (req: Request, res: Response) => {
     if (!validPassword) {
       return res.status(400).json({ error: 'Email ou mot de passe incorrect' });
     }
-
+    console.log(validPassword);
     // Créer un token JWT
     const token = jwt.sign(
       { userId: user.id, email: user.email },
@@ -65,7 +63,7 @@ export const login = async (req: Request, res: Response) => {
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ token });
+    res.status(200).json({ user ,token });
   } catch (error) {
     res.status(500).json({error});
   }
