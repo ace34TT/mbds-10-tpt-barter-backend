@@ -4,7 +4,6 @@ import express from "express";
 const router = express.Router();
 
 router.get("/", getNotificationsHandler);
-router.get("/", getNotificationsHandler);
 router.post('/', addNotificationHandler);
 router.get('/:userId', getUserNotificationsHandler);
 router.put('/:id/read', markNotificationAsReadHandler);

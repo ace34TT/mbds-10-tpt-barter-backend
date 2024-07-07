@@ -24,5 +24,5 @@ export const getNotificationById = async (id: string): Promise<INotification | n
 };
 
 export const getNotifications = async (): Promise<INotification[]> => {
-  return await Notification.find();
+  return Notification.find();
 };

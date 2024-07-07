@@ -4,9 +4,7 @@ import * as notificationService from '../services/notification.services';
 export const getNotificationsHandler = async (req: Request, res: Response) => {
   try {
     const notifications = await notificationService.getNotifications();
-    return res.status(200).json({
-      message: "Notifications get is working",
-    });
+    return res.status(200).json(notifications);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error });
@@ -53,6 +51,7 @@ export const markNotificationAsReadHandler = async (req: Request, res: Response)
 export const getNotificationByIdHandler = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const notification = await notificationService.getNotificationById(id);
     if (notification) {
       res.status(200).json(notification);
