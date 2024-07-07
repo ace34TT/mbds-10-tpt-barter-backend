@@ -7,6 +7,7 @@ import { NotificationRoutes } from "./routes/notiification.routes";
 import { ObjectRoutes } from "./routes/object.routes";
 import { UserRoutes } from "./routes/user.routes";
 import { ReportRoutes } from "./routes/report.routes";
+import { PostRoutes } from "./routes/post.routes";
 
 const app = express();
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -33,6 +34,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/auth", AuthRoutes);
 app.use("/api/categories", CategoryRoutes);
 app.use("/api/chats", ChatRoutes);
+app.use("/api/posts", PostRoutes);
 app.use("/api/notifications", NotificationRoutes);
 app.use("/api/objects", ObjectRoutes);
 app.use("/api/reports", ReportRoutes);

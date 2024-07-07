@@ -43,50 +43,70 @@ model Category {
 }
 
 model Object {
-  id           Int         @id @default(autoincrement())
-  name         String
-  category     Category    @relation(fields: [categoryId], references: [id])
-  categoryId   Int
-  description  String
-  owner        User        @relation(fields: [ownerId], references: [id])
-  ownerId      Int
-  photos       String[]
-  post         Post?       @relation(fields: [postId], references: [id])
-  postId       Int?
-  Suggestoin   Suggestoin? @relation(fields: [suggestoinId], references: [id])
-  suggestoinId Int?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-}
-
-enum PostStatus {
-  ACTIVE
-  CLOSED
-  SUSPENDED
+  id          Int                @id @default(autoincrement())
+  name        String
+  category    Category           @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  description String
+  owner       User               @relation(fields: [ownerId], references: [id])
+  ownerId     Int
+  photos      String[]
+  posts       ObjectPost[]
+  suggestions ObjectSuggestion[]
+  deletedAt   DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 }
 
 model Post {
   id          Int          @id @default(autoincrement())
   author      User         @relation(fields: [authorId], references: [id])
   authorId    Int
-  Objects     Object[]
-  Suggestoins Suggestoin[]
+  objects     ObjectPost[]
+  suggestions Suggestion[]
+  deletedAt   DateTime?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
 
-enum SuggestoinStatus {
+model ObjectPost {
+  id        Int       @id @default(autoincrement())
+  object    Object    @relation(fields: [objectId], references: [id])
+  objectId  Int
+  post      Post      @relation(fields: [postId], references: [id])
+  postId    Int
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([objectId, postId])
+  @@index([postId, objectId])
+}
+
+enum SuggestionStatus {
   PENDING
   ACCEPTED
   DECLINED
 }
 
-model Suggestoin {
-  id              Int              @id @default(autoincrement())
-  status          SuggestoinStatus
-  post            Post             @relation(fields: [postId], references: [id])
+model Suggestion {
+  id              Int                @id @default(autoincrement())
+  status          SuggestionStatus
+  post            Post               @relation(fields: [postId], references: [id])
   postId          Int
-  suggestedObject Object[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  suggestedObject ObjectSuggestion[]
+  deletedAt       DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model ObjectSuggestion {
+  id           Int        @id @default(autoincrement())
+  object       Object     @relation(fields: [objectId], references: [id])
+  objectId     Int
+  suggestion   Suggestion @relation(fields: [suggestionId], references: [id])
+  suggestionId Int
+  deletedAt    DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
