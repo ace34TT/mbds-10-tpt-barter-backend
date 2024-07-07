@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as notificationService from '../services/notification.services';
+import mongoose from "mongoose";
 
 export const getNotificationsHandler = async (req: Request, res: Response) => {
   try {
@@ -36,6 +37,11 @@ export const getUserNotificationsHandler = async (req: Request, res: Response) =
 export const markNotificationAsReadHandler = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' });
+    }
+
     const notification = await notificationService.markNotificationAsRead(id);
     if (notification) {
       res.status(200).json(notification);
@@ -51,7 +57,11 @@ export const markNotificationAsReadHandler = async (req: Request, res: Response)
 export const getNotificationByIdHandler = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    console.log(id);
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' });
+    }
+    
     const notification = await notificationService.getNotificationById(id);
     if (notification) {
       res.status(200).json(notification);
