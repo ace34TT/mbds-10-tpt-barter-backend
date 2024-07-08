@@ -55,7 +55,7 @@ export const login = async (req: Request, res: Response) => {
     if (!validPassword) {
       return res.status(400).json({ error: 'Email ou mot de passe incorrect' });
     }
-    console.log(validPassword);
+
     // Créer un token JWT
     const token = jwt.sign(
       { userId: user.id, email: user.email },
