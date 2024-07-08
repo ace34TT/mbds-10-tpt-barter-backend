@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/", getNotificationsHandler);
 router.post('/', addNotificationHandler);
-router.get('/:userId', getUserNotificationsHandler);
+router.get('/user/:userId', getUserNotificationsHandler);
 router.put('/:id/read', markNotificationAsReadHandler);
 router.get('/:id', getNotificationByIdHandler);
 
