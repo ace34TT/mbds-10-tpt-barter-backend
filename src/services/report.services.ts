@@ -30,6 +30,10 @@ export const addPostReport = async (usermakereport: IUserReport, objetReport: IO
     }
 };
 
+export const updateReport = async (id: string, statut: string): Promise<IReport | null> => {
+    return await Report.findByIdAndUpdate(id, { statut, updatedAt: new Date() }, { new: true });
+};
+
 export const updateUserReport = async (id: string, statut: string): Promise<IReport | null> => {
     return await Report.findByIdAndUpdate(id, { statut, updatedAt: new Date() }, { new: true });
 };
@@ -46,8 +50,20 @@ export const getReports = async (type?: 'user' | 'post'): Promise<IReport[]> => 
         } else if (type === 'post') {
             query.objetReport = { $exists: true };
         }
+        return await Report.find(query);
+    } else {
+        return await Report.find();
     }
-    return await Report.find(query);
+};
+
+export const getUserReports = async (userid: number): Promise<IReport[]> => {
+    try {
+        const reports = await Report.find({ 'usermakereport.id': userid });
+        return reports;
+    } catch (error) {
+        console.error("Erreur lors de la récupération des rapports:", error);
+        throw error;
+    }
 };
 
 export const getReportById = async (id: string): Promise<IReport | null> => {

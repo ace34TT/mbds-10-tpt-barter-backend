@@ -58,6 +58,31 @@ export const updateUserReportHandler = async (req: Request, res: Response) => {
   }
 };
 
+
+export const updateReportHandler = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  try {
+    const { id } = req.params;
+    const { statut } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' });
+    }
+
+    const report = await reportService.updateReport(id, statut);
+    if (report) {
+      res.status(200).json(report);
+    } else {
+      res.status(404).json({ message: "Report not found" });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export const updatePostReportHandler = async (req: Request, res: Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -83,14 +108,26 @@ export const updatePostReportHandler = async (req: Request, res: Response) => {
 };
 
 export const getReportsHandler = async (req: Request, res: Response) => {
+  try {
+    const { type } = req.query;
+    const reports = await reportService.getReports(type as 'user' | 'post');
+    res.status(200).json(reports);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+export const getUserReportsHandler = async (req: Request, res: Response) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   try {
-    const { type } = req.query;
-    const reports = await reportService.getReports(type as 'user' | 'post');
+    const { id } = req.params;
+
+    const reports = await reportService.getUserReports(+id);
     res.status(200).json(reports);
   } catch (error) {
     res.status(500).json(error);
