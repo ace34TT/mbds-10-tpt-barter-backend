@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as notificationService from '../services/notification.services';
 import mongoose from "mongoose";
+import { validationResult } from "express-validator";
 
 export const getNotificationsHandler = async (req: Request, res: Response) => {
   try {
@@ -13,6 +14,11 @@ export const getNotificationsHandler = async (req: Request, res: Response) => {
 };
 
 export const addNotificationHandler = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const { userId, subject, message } = req.body;
     const notification = await notificationService.addNotification(userId, message, subject);
