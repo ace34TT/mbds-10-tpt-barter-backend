@@ -1,4 +1,4 @@
-import { Chat } from "../model/chats.models";
+import { Chat } from "./../models/chats.models";
 import { IChat, IMessage } from "../shared/interfaces/mongoModels.interfaces";
 
 export const createChatService = async (chat: IChat) => {
