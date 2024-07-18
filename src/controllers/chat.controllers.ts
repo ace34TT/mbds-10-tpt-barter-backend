@@ -5,7 +5,7 @@ import {
   deleteChatByIdService,
   getChatByUserService,
 } from "../services/chat.services";
-import { chatSchema, messageSchema } from "../shared/schemas/chst.schema";
+import { chatSchema, messageSchema } from "../shared/schemas/chat.schema";
 import { z } from "zod";
 
 export const createChatHandler = async (req: Request, res: Response) => {
