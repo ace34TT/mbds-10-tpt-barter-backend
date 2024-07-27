@@ -8,6 +8,7 @@ import { ObjectRoutes } from "./routes/object.routes";
 import { UserRoutes } from "./routes/user.routes";
 import { ReportRoutes } from "./routes/report.routes";
 import Protect from "./middlewares/auth"
+import cors from "cors";
 
 const app = express();
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -22,6 +23,14 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   );
   next();
 });
+
+
+const corsOptions = {
+  origin:['https://localhost:4200'],
+  optionsSuccessStatus: 200
+}
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createObject, deleteObject, getObjectById, getObjects, updateObject } from "../services/object.service";
+import { createObject, deleteObject, getObjectById,getObjectByIdAllData, getObjects, updateObject,getObjectsPagin} from "../services/object.service";
 import { validationResult } from "express-validator";
 import { uploadFileToDrive } from "../services/google.drive.services";
 
@@ -9,6 +9,37 @@ export const getObjectsHandler = async (req: Request, res: Response) => {
     return res.status(200).json(objects);
   } catch (error) {
     return res.status(500).json({ error: "Failed to retrieve objects" });
+  }
+};
+
+export const getObjectsPaginHandler = async (req: Request, res: Response) => {
+  try {
+    let page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    if(page == 0) {
+      page = 1;
+    }
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+
+    console.log(req.query);
+    
+    const result = await getObjectsPagin(page, limit);
+
+    return res.status(200).json(result);
+  } catch ( err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+
+export const getObjectByIdAllDataHandler = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const object = await getObjectByIdAllData(Number(id));
+    return res.status(200).json(object);
+  } catch (error: any) {
+    console.error("Error in getObjectByIdController:", error);
+    return res.status(404).json({ error: error.message });
   }
 };
 
@@ -35,7 +66,8 @@ export const deleteObjectHandler = async (req: Request, res: Response) => {
 
     await deleteObject(Number(id));
     return res.status(200).json({ message: "Object deleted successfully" });
-  } catch (error) {
+  } catch (error: any) {
+    console.log(error.message)
     return res.status(500).json({ error: "Failed to delete object" });
   }
 };
@@ -53,7 +85,7 @@ export const createObjectHandler = async (req: Request, res: Response) => {
     }
 
     const fileIds = await uploadFileToDrive(files);
-    const { name, categoryId, description, ownerId, photos } = req.body;
+    const { name, categoryId, description, ownerId } = req.body;
 
     const newObject = await createObject({ name, categoryId: Number(categoryId), description, ownerId: Number(ownerId), photos: fileIds });
     return res.status(201).json(newObject);
@@ -66,13 +98,14 @@ export const createObjectHandler = async (req: Request, res: Response) => {
 export const updateObjectHandler = async (req: Request, res: Response) => {
 
   const { id } = req.params;
-  const { name, categoryId, description, ownerId } = req.body;
+  const { name, categoryId, description, ownerId,photos } = req.body;
+  console.log(req.body);
   try {
     const existingObject = await getObjectById(Number(id));
     if (!existingObject) {
       return res.status(404).json({ error: "Object not found" });
     }
-    const updatedObject = await updateObject(Number(id), { name: name, categoryId: categoryId, description: description, ownerId: ownerId });
+    const updatedObject = await updateObject(Number(id), { name: name, categoryId: categoryId, description: description, ownerId: ownerId ,photos});
     return res.status(200).json(updatedObject);
   } catch (error) {
     console.log(error)
