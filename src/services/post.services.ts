@@ -15,6 +15,46 @@ export const getActivePostService = async () => {
   } catch (error) {}
 };
 
+export const getPostService = async (page: number, limit: number) => {
+  try {
+    const posts = await prisma.post.findMany({
+      skip: page * limit,
+      take: limit,
+      include: {
+        author: true,
+        objects: {
+          include: {
+            object: true,
+          },
+        },
+        suggestions: {
+          include: {
+            suggestedObject: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const totalPosts = await prisma.post.count();
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    return {
+      posts,
+      totalPosts,
+      totalPages,
+      currentPage: page,
+      nextPage: page + 1 < totalPages ? page + 1 : null,
+      prevPage: page > 0 ? page - 1 : null,
+      hasMore: (page + 1) * limit < totalPosts,
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Error('An error occurred while fetching posts.');
+  }
+};
 export const createPostService = async (post: IPost) => {
   try {
     const _post = await prisma.post.create({
@@ -26,7 +66,8 @@ export const createPostService = async (post: IPost) => {
       },
     });
     return _post;
-  } catch (error) {
+  } catch (error:any) {
+    console.log(error.message);
     throw error;
   }
 };

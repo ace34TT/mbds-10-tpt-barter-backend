@@ -1,10 +1,11 @@
-import { Request, Response } from "express";
 import {
   createPostService,
   deletePostService,
   getActivePostService,
   updatePostService,
+  getPostService
 } from "../services/post.services";
+import { Request, Response } from "express";
 
 export const getActivePostsHandler = async (req: Request, res: Response) => {
   try {
@@ -15,12 +16,29 @@ export const getActivePostsHandler = async (req: Request, res: Response) => {
   }
 };
 
+
+export const getPostsPaginated = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 0;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const result = await getPostService(page, limit);
+    
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch posts' });
+  }
+};
+
+
 export const createPostHandler = async (req: Request, res: Response) => {
   try {
     const post = req.body;
     const _post = await createPostService(post);
     return res.status(201).json(_post);
-  } catch (error) {
+  } catch (error:any) {
+    console.log(error.message);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

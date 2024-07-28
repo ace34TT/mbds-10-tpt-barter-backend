@@ -7,6 +7,7 @@ import { NotificationRoutes } from "./routes/notiification.routes";
 import { ObjectRoutes } from "./routes/object.routes";
 import { UserRoutes } from "./routes/user.routes";
 import { ReportRoutes } from "./routes/report.routes";
+import { PostRoutes } from "./routes/post.routes";
 import Protect from "./middlewares/auth"
 import cors from "cors";
 
@@ -49,5 +50,6 @@ app.use("/api/notifications",Protect, NotificationRoutes);
 app.use("/api/objects",Protect, ObjectRoutes);
 app.use("/api/reports",Protect, ReportRoutes);
 app.use("/api/users",Protect,UserRoutes);
+app.use("/api/posts",Protect,PostRoutes);
 
 export default app;

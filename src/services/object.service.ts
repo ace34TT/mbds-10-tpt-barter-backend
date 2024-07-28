@@ -35,6 +35,29 @@ export const getObjectByIdAllData = async (id: number) => {
   }
 };
 
+export const getObjectByOwner= async (id: number) => {
+  try {
+    const object = await prisma.object.findMany({
+      where: { ownerId: id },
+      include: {
+        category: true,
+        owner: true,
+        posts: true,
+        suggestions: true,
+      },
+    });
+
+    if (!object) {
+      throw new Error('Object not found');
+    }
+
+    return object;
+  } catch (error) {
+    console.error("Error retrieving object by ID:", error);
+    throw new Error("Failed to retrieve object");
+  }
+};
+
 export const getObjectsPagin = async (page: number, limit: number) => {
     try {
       const startIndex = (page - 1) * limit;
@@ -77,7 +100,7 @@ export const getObjectsPagin = async (page: number, limit: number) => {
             name: object.owner.name,
             email: object.owner.email,
           },
-          photo: object.photos, // Changed to 'photo' based on interface
+          photos: object.photos, // Changed to 'photo' based on interface
           posts: object.posts.map(post => ({
             id: post.id.toString(), // Assuming post.id is a number and needs to be converted to string
             // Include other properties of the post as needed

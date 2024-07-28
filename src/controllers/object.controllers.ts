@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createObject, deleteObject, getObjectById,getObjectByIdAllData, getObjects, updateObject,getObjectsPagin} from "../services/object.service";
+import { createObject, deleteObject, getObjectById,getObjectByIdAllData, getObjects, updateObject,getObjectsPagin,getObjectByOwner} from "../services/object.service";
 import { validationResult } from "express-validator";
 import { uploadFileToDrive } from "../services/google.drive.services";
 
@@ -36,6 +36,18 @@ export const getObjectByIdAllDataHandler = async (req: Request, res: Response) =
 
   try {
     const object = await getObjectByIdAllData(Number(id));
+    return res.status(200).json(object);
+  } catch (error: any) {
+    console.error("Error in getObjectByIdController:", error);
+    return res.status(404).json({ error: error.message });
+  }
+};
+
+export const getObjectByOwnerHandler = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const object = await getObjectByOwner(Number(id));
     return res.status(200).json(object);
   } catch (error: any) {
     console.error("Error in getObjectByIdController:", error);

@@ -1,4 +1,4 @@
-import { createObjectHandler, deleteObjectHandler, getObjectByIdHandler, getObjectsPaginHandler, getObjectsHandler, updateObjectHandler,getObjectByIdAllDataHandler } from "../controllers/object.controllers";
+import { createObjectHandler, deleteObjectHandler, getObjectByIdHandler, getObjectsPaginHandler, getObjectsHandler, updateObjectHandler,getObjectByIdAllDataHandler,getObjectByOwnerHandler } from "../controllers/object.controllers";
 import express from "express";
 import { createObjectValidationRules } from "../validators/objet.validator";
 import { google } from "googleapis";
@@ -13,6 +13,7 @@ const upload = multer({
 router.get("/", getObjectsHandler);
 router.get("/pagin",getObjectsPaginHandler);
 router.get("/:id", getObjectByIdHandler);
+router.get("/owner/:id", getObjectByOwnerHandler);
 router.get("/allData/:id", getObjectByIdAllDataHandler);
 router.post("/", createObjectValidationRules(), upload.array('files', 5), createObjectHandler);
 router.put("/:id", updateObjectHandler);
