@@ -67,7 +67,6 @@ export const createObjectHandler = async (req: Request, res: Response) => {
     const bucketName = process.env.SPACES_NAME!;
     const cdnUrl = `https://${bucketName}.ams3.cdn.digitaloceanspaces.com`;
 
-    // Générer les URLs CDN pour les fichiers
     const fileIds = reqfiles.files.map(files => {
       var file = files as Express.MulterS3.File;
       return `${cdnUrl}/${file.key}`;
@@ -75,7 +74,6 @@ export const createObjectHandler = async (req: Request, res: Response) => {
 
     const { name, categoryId, description, ownerId } = req.body;
 
-    // Remplacer createObject par la logique appropriée pour créer un objet
     const newObject = {
       name,
       categoryId: Number(categoryId),
@@ -84,7 +82,9 @@ export const createObjectHandler = async (req: Request, res: Response) => {
       photos: fileIds
     };
 
-    return res.status(201).json(newObject);
+    var createdObject = await createObject(newObject);
+
+    return res.status(201).json(createdObject);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Failed to create object" });
