@@ -23,7 +23,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 
 // !

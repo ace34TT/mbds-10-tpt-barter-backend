@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { createObject, deleteObject, getObjectById, getObjects, updateObject } from "../services/object.service";
-import { validationResult } from "express-validator";
-import { uploadFileToDrive } from "../services/google.drive.services";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const getObjectsHandler = async (req: Request, res: Response) => {
   try {
@@ -40,6 +41,10 @@ export const deleteObjectHandler = async (req: Request, res: Response) => {
   }
 };
 
+interface MulterRequestWithFiles extends Request {
+  files: Express.Multer.File[];
+}
+
 export const createObjectHandler = async (req: Request, res: Response) => {
   try{
     // const errors = validationResult(req);
@@ -47,15 +52,38 @@ export const createObjectHandler = async (req: Request, res: Response) => {
     //   return res.status(400).json({ errors: errors.array() });
     // }
 
-    const files: Express.Multer.File[] = req.files as Express.Multer.File[];;
-    if (!files || files.length === 0) {
+    // const files: Express.Multer.File[] = req.files as Express.Multer.File[];;
+    // if (!files || files.length === 0) {
+    //   return res.status(400).json({ error: 'No files uploaded' });
+    // }
+
+    // const fileIds = await uploadFileToDrive(files);
+    const reqfiles = req as MulterRequestWithFiles;
+
+    if (!reqfiles || reqfiles.files.length === 0) {
       return res.status(400).json({ error: 'No files uploaded' });
     }
 
-    const fileIds = await uploadFileToDrive(files);
-    const { name, categoryId, description, ownerId, photos } = req.body;
+    const bucketName = process.env.SPACES_NAME!;
+    const cdnUrl = `https://${bucketName}.ams3.cdn.digitaloceanspaces.com`;
 
-    const newObject = await createObject({ name, categoryId: Number(categoryId), description, ownerId: Number(ownerId), photos: fileIds });
+    // Générer les URLs CDN pour les fichiers
+    const fileIds = reqfiles.files.map(files => {
+      var file = files as Express.MulterS3.File;
+      return `${cdnUrl}/${file.key}`;
+    });
+
+    const { name, categoryId, description, ownerId } = req.body;
+
+    // Remplacer createObject par la logique appropriée pour créer un objet
+    const newObject = {
+      name,
+      categoryId: Number(categoryId),
+      description,
+      ownerId: Number(ownerId),
+      photos: fileIds
+    };
+
     return res.status(201).json(newObject);
   } catch (error) {
     console.log(error);
