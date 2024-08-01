@@ -18,11 +18,11 @@ const s3 = new S3({
 });
 
 const imageFileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+    console.log(file);
     const allowedFileTypes = /jpeg|jpg|png|gif/;
     const extname = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedFileTypes.test(file.mimetype);
 
-    if (mimetype && extname) {
+    if (extname) {
         return cb(null, true);
     } else {
         cb(new Error("Only image files are allowed!"));
