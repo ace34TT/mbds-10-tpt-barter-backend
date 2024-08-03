@@ -105,6 +105,7 @@ async function main() {
   // Create Posts
   const posts = Array.from({ length: 30 }, () => ({
     authorId: faker.helpers.arrayElement(createdUsers).id,
+    description: faker.lorem.paragraph(),
   }));
 
   try {

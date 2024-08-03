@@ -54,6 +54,7 @@ export interface IPost {
   id: number;
   author: IUser; // Direct relation to User
   authorId: number;
+  desorption: string;
   objects?: IObject[]; // Corrected to reflect direct relation to Object via ObjectPost
   objectIds: number[];
   suggestions?: ISuggestion[]; // Direct relation to Suggestion
