@@ -47,7 +47,10 @@ export const AuthController = {
 
   login: async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log("calling login function");
       loginSchema.parse(req.body);
+      console.log(req.body);
+
       const { email, password } = req.body;
       const user = await prisma.user.findUnique({
         where: { email },

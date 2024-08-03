@@ -9,20 +9,11 @@ import { UserRoutes } from "./routes/user.routes";
 import { ReportRoutes } from "./routes/report.routes";
 import Protect from "./middlewares/auth";
 import { errorHandler } from "./middlewares/error.middleware";
+import cors from "cors";
+import { PostRoutes } from "./routes/post.routes";
 
 const app = express();
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-  );
-  next();
-});
+app.use(cors({}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -38,6 +29,7 @@ app.use("/api/categories", Protect, CategoryRoutes);
 app.use("/api/chats", Protect, ChatRoutes);
 app.use("/api/notifications", Protect, NotificationRoutes);
 app.use("/api/objects", Protect, ObjectRoutes);
+app.use("/api/posts", PostRoutes);
 app.use("/api/reports", Protect, ReportRoutes);
 app.use("/api/users", Protect, UserRoutes);
 

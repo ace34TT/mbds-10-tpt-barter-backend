@@ -6,7 +6,15 @@ export const getActivePostService = async () => {
     const posts = await prisma.post.findMany({
       where: { deletedAt: null },
       include: {
-        objects: true,
+        objects: {
+          include: {
+            object: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
         suggestions: true,
         author: true,
       },
