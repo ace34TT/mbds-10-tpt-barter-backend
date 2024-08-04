@@ -156,3 +156,16 @@ export const deleteObject = async (id: number) => {7
         where: { id },
     });
 };
+
+
+export const deleteObjectService = async (objectId: number) => {
+  try {
+    const deletedObject = prisma.object.update({
+      where: { id: objectId },
+      data: { deletedAt: new Date() },
+    });
+    return deletedObject;
+  } catch (error) {
+    throw error;
+  }
+};

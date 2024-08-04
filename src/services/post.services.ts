@@ -20,6 +20,7 @@ export const getPostService = async (page: number, limit: number) => {
     const posts = await prisma.post.findMany({
       skip: page * limit,
       take: limit,
+      where: { deletedAt: null },
       include: {
         author: true,
         objects: {

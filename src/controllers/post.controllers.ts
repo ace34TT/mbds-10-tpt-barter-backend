@@ -59,7 +59,7 @@ export const updatePostHandler = async (req: Request, res: Response) => {
     const updatedFields = req.body;
     const updatedPost = await updatePostService(postId, updatedFields);
     return res.status(200).json(updatedPost);
-  } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
+  } catch (error :any) {
+    return res.status(500).json({ message: error.message });
   }
 };

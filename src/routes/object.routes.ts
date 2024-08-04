@@ -1,4 +1,4 @@
-import { createObjectHandler, deleteObjectHandler, getObjectByIdHandler, getObjectsPaginHandler, getObjectsHandler, updateObjectHandler,getObjectByIdAllDataHandler,getObjectByOwnerHandler } from "../controllers/object.controllers";
+import { createObjectHandler, deleteObjectHandler, getObjectByIdHandler, getObjectsPaginHandler, getObjectsHandler,deleteObjectStatus, updateObjectHandler,getObjectByIdAllDataHandler,getObjectByOwnerHandler } from "../controllers/object.controllers";
 import express from "express";
 import { createObjectValidationRules } from "../validators/objet.validator";
 import { google } from "googleapis";
@@ -18,5 +18,6 @@ router.get("/allData/:id", getObjectByIdAllDataHandler);
 router.post("/", createObjectValidationRules(), upload.array('files', 5), createObjectHandler);
 router.put("/:id", updateObjectHandler);
 router.delete("/:id", deleteObjectHandler);
+router.delete("/status/:id", deleteObjectStatus);
 
 export { router as ObjectRoutes };

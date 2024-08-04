@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createObject, deleteObject, getObjectById,getObjectByIdAllData, getObjects, updateObject,getObjectsPagin,getObjectByOwner} from "../services/object.service";
+import { createObject, deleteObject, getObjectById,getObjectByIdAllData, getObjects, updateObject,getObjectsPagin,getObjectByOwner,deleteObjectService} from "../services/object.service";
 import { validationResult } from "express-validator";
 import { uploadFileToDrive } from "../services/google.drive.services";
 
@@ -77,6 +77,22 @@ export const deleteObjectHandler = async (req: Request, res: Response) => {
     }
 
     await deleteObject(Number(id));
+    return res.status(200).json({ message: "Object deleted successfully" });
+  } catch (error: any) {
+    console.log(error.message)
+    return res.status(500).json({ error: "Failed to delete object" });
+  }
+};
+
+export const deleteObjectStatus = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const deletedObject = await getObjectById(Number(id));
+    if (!deletedObject) {
+      return res.status(404).json({ error: "Object not found" });
+    }
+
+    await deleteObjectService(Number(id));
     return res.status(200).json({ message: "Object deleted successfully" });
   } catch (error: any) {
     console.log(error.message)
