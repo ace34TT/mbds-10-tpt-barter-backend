@@ -6,20 +6,53 @@ export const getActivePostService = async () => {
     const posts = await prisma.post.findMany({
       where: { deletedAt: null },
       include: {
-        objects: true,
+        objects: {
+          include: {
+            object: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
         suggestions: true,
         author: true,
       },
     });
+    console.log(posts);
     return posts;
   } catch (error) {}
 };
+export const getPostService = async (postId: number) => {
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      include: {
+        objects: {
+          include: {
+            object: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+        suggestions: true,
+        author: true,
+      },
+    });
 
+    return post;
+  } catch (error) {
+    throw error;
+  }
+};
 export const createPostService = async (post: IPost) => {
   try {
     const _post = await prisma.post.create({
       data: {
         author: { connect: { id: post.authorId } },
+        description: post.desorption,
         objects: {
           connect: post.objectIds.map((objectId) => ({ id: objectId })),
         },

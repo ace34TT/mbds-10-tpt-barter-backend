@@ -29,6 +29,7 @@ export const addNotificationHandler = async (req: Request, res: Response) => {
   }
 };
 
+
 export const getUserNotificationsHandler = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;

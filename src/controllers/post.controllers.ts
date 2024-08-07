@@ -3,6 +3,7 @@ import {
   createPostService,
   deletePostService,
   getActivePostService,
+  getPostService,
   updatePostService,
 } from "../services/post.services";
 
@@ -10,6 +11,20 @@ export const getActivePostsHandler = async (req: Request, res: Response) => {
   try {
     const posts = await getActivePostService();
     return res.status(200).json(posts);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getPostHandler = async (req: Request, res: Response) => {
+  try {
+    const postId = parseInt(req.params.id);
+    const post = await getPostService(postId);
+    if (post) {
+      return res.status(200).json(post);
+    } else {
+      return res.status(404).json({ message: "Post not found" });
+    }
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }

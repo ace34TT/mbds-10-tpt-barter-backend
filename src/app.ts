@@ -7,24 +7,15 @@ import { NotificationRoutes } from "./routes/notiification.routes";
 import { ObjectRoutes } from "./routes/object.routes";
 import { UserRoutes } from "./routes/user.routes";
 import { ReportRoutes } from "./routes/report.routes";
-import Protect from "./middlewares/auth"
+import Protect from "./middlewares/auth";
+import { errorHandler } from "./middlewares/error.middleware";
+import cors from "cors";
+import { PostRoutes } from "./routes/post.routes";
 
 const app = express();
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-  );
-  next();
-});
+app.use(cors({}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
 
 // !
 app.get("/", (req: Request, res: Response) => {
@@ -33,12 +24,20 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-app.use("/api/auth",AuthRoutes);
-app.use("/api/categories",Protect, CategoryRoutes);
-app.use("/api/chats",Protect, ChatRoutes);
-app.use("/api/notifications",Protect, NotificationRoutes);
-app.use("/api/objects",Protect, ObjectRoutes);
-app.use("/api/reports",Protect, ReportRoutes);
-app.use("/api/users",Protect,UserRoutes);
+app.use("/api/auth", AuthRoutes);
+app.use("/api/categories", Protect, CategoryRoutes);
+app.use("/api/chats", Protect, ChatRoutes);
+app.use("/api/notifications", Protect, NotificationRoutes);
+app.use("/api/objects", Protect, ObjectRoutes);
+app.use("/api/posts", PostRoutes);
+app.use("/api/reports", Protect, ReportRoutes);
+app.use("/api/users", Protect, UserRoutes);
+
+app.use(async (err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (!errorHandler.isTrustedError(err)) {
+    return next(err); // Immediately pass untrusted errors to the next handler
+  }
+  await errorHandler.handleError(err, req, res, next); // Handle trusted errors
+});
 
 export default app;
