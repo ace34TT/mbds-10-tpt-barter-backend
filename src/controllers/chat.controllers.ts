@@ -100,6 +100,7 @@ export const getChatsByUserHandler = async (req: Request, res: Response) => {
     const chats = await getChatByUserService(userId);
     return res.status(200).json(chats);
   } catch (error: any) {
+    console.log(error);
     if (error.message.includes("not found")) {
       res.status(404).json({ message: error.message });
     } else {

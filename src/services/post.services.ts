@@ -1,7 +1,7 @@
 import { prisma } from "../configs/prisma.configs";
 import { IPost } from "../shared/interfaces/prismaModels.interfaces";
 
-export const getActivePostService = async () => {
+/*export const getActivePostService = async () => {
   try {
     const posts = await prisma.post.findMany({
       where: { deletedAt: null },
@@ -21,8 +21,9 @@ export const getActivePostService = async () => {
     });
     console.log(posts);
     return posts;
-  } catch (error) {}
-};
+  } catch (error) { }
+};*/
+
 export const getPostService = async (postId: number) => {
   try {
     const post = await prisma.post.findUnique({
@@ -52,7 +53,7 @@ export const createPostService = async (post: IPost) => {
     const _post = await prisma.post.create({
       data: {
         author: { connect: { id: post.authorId } },
-        description: post.desorption,
+        description: post.description,
         objects: {
           connect: post.objectIds.map((objectId) => ({ id: objectId })),
         },
@@ -94,4 +95,93 @@ export const deletePostService = async (postId: number) => {
   } catch (error) {
     throw error;
   }
+};
+
+
+export const getUserPostService = async (authorId: number, page: number, limit: number) => {
+  try {
+    const startIndex = (page - 1) * limit;
+    const totalDocs = await prisma.post.count();
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    const posts = await prisma.post.findMany({
+      skip: startIndex,
+      take: limit,
+      where: { authorId: authorId },
+      include: {
+        objects: {
+          include: {
+            object: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+        suggestions: true,
+        author: true,
+      },
+    });
+
+    const nextPage = page < totalPages ? page + 1 : null;
+    const prevPage = page > 1 ? page - 1 : null;
+
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return {
+      data: posts,
+      totalDocs,
+      totalPages,
+      nextPage,
+      prevPage,
+      hasNextPage,
+      hasPrevPage,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getActivePostService = async (page: number, limit: number) => {
+  try {
+    const startIndex = (page - 1) * limit;
+    const totalDocs = await prisma.post.count();
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    const posts = await prisma.post.findMany({
+      skip: startIndex,
+      take: limit,
+      where: { deletedAt: null },
+      include: {
+        objects: {
+          include: {
+            object: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+        suggestions: true,
+        author: true,
+      },
+    });
+
+    const nextPage = page < totalPages ? page + 1 : null;
+    const prevPage = page > 1 ? page - 1 : null;
+
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return {
+      data: posts,
+      totalDocs,
+      totalPages,
+      nextPage,
+      prevPage,
+      hasNextPage,
+      hasPrevPage,
+    };
+  } catch (error) { }
 };

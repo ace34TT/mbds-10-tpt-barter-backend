@@ -4,12 +4,14 @@ import {
   createChatHandler,
   deleteChatHandler,
   getChatByIdHandler,
+  getChatsByUserHandler,
 } from "../controllers/chat.controllers";
 
 const router = express.Router();
 
 router.get("/:id", getChatByIdHandler);
-router.post("/", createChatHandler);
+router.get("/user/:id", getChatsByUserHandler);
+router.post("/", createChatHandler); 
 router.delete("/:id", deleteChatHandler);
 router.patch("/continue/:id", continueChatHandler);
 

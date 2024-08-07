@@ -28,7 +28,7 @@ export const continueChatService = (chatId: string, message: IMessage) => {
 };
 export const getChatByUserService = (userId: string) => {
   try {
-    const chats = Chat.find({ sender: userId }).exec();
+    const chats = Chat.find({ "sender.id": userId }).exec();
     return chats;
   } catch (error: any) {
     throw new Error(error);

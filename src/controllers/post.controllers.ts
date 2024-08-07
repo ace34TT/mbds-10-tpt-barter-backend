@@ -4,12 +4,20 @@ import {
   deletePostService,
   getActivePostService,
   getPostService,
+  getUserPostService,
   updatePostService,
 } from "../services/post.services";
 
 export const getActivePostsHandler = async (req: Request, res: Response) => {
   try {
-    const posts = await getActivePostService();
+    let page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    if(page == 0) {
+      page = 1;
+    }
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+
+    const posts = await getActivePostService(page, limit);
+
     return res.status(200).json(posts);
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
@@ -56,6 +64,26 @@ export const updatePostHandler = async (req: Request, res: Response) => {
     const updatedFields = req.body;
     const updatedPost = await updatePostService(postId, updatedFields);
     return res.status(200).json(updatedPost);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getUserPostHandler = async (req: Request, res: Response) => {
+  try {
+    let page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    if(page == 0) {
+      page = 1;
+    }
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+
+    const authorId = parseInt(req.params.id);
+    const post = await getUserPostService(authorId, page, limit);
+    if (post) {
+      return res.status(200).json(post);
+    } else {
+      return res.status(404).json({ message: "Post not found" });
+    }
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }

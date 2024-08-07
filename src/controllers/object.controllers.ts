@@ -1,14 +1,23 @@
-import { Request, Response } from "express";
-import { createObject, deleteObject, getObjectById, getObjects, updateObject } from "../services/object.service";
+import { NextFunction, Request, Response } from "express";
+import { createObject, deleteObject, getObjectById, getObjectByOwner, getObjects, updateObject } from "../services/object.service";
 import dotenv from "dotenv";
+import { APIError } from "../shared/utils/errors/BaseError";
 
 dotenv.config();
 
-export const getObjectsHandler = async (req: Request, res: Response) => {
+export const getObjectsHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const objects = await getObjects();
+    let page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    if(page == 0) {
+      page = 1;
+    }
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+
+    const objects = await getObjects(page, limit);
     return res.status(200).json(objects);
   } catch (error) {
+    console.log(error);
+    next(new APIError("Internal server error", 500));
     return res.status(500).json({ error: "Failed to retrieve objects" });
   }
 };
@@ -17,6 +26,25 @@ export const getObjectByIdHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const object = await getObjectById(Number(id));
+    if (!object) {
+      return res.status(404).json({ error: "Object not found" });
+    }
+    return res.status(200).json(object);
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to retrieve object" });
+  }
+};
+
+export const getObjectByOwnerHandler = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    let page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    if(page == 0) {
+      page = 1;
+    }
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+
+    const object = await getObjectByOwner(Number(id), page, limit);
     if (!object) {
       return res.status(404).json({ error: "Object not found" });
     }
