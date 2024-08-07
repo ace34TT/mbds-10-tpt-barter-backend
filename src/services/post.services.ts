@@ -55,7 +55,9 @@ export const createPostService = async (post: IPost) => {
         author: { connect: { id: post.authorId } },
         description: post.description,
         objects: {
-          connect: post.objectIds.map((objectId) => ({ id: objectId })),
+          create: post.objectIds.map((objectId) => ({
+            object: { connect: { id: objectId } },
+          })),
         },
       },
     });
