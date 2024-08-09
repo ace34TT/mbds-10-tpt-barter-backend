@@ -10,13 +10,14 @@ import {
 
 export const getActivePostsHandler = async (req: Request, res: Response) => {
   try {
+    const userId = parseInt(req.params.id);
     let page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
     if(page == 0) {
       page = 1;
     }
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
 
-    const posts = await getActivePostService(page, limit);
+    const posts = await getActivePostService(page, limit, userId);
 
     return res.status(200).json(posts);
   } catch (error) {

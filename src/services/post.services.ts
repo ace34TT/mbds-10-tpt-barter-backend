@@ -41,7 +41,7 @@ export const getPostService = async (postId: number) => {
         suggestions: true,
         author: true,
       },
-      
+
     });
 
     return post;
@@ -149,7 +149,7 @@ export const getUserPostService = async (authorId: number, page: number, limit: 
   }
 };
 
-export const getActivePostService = async (page: number, limit: number) => {
+export const getActivePostService = async (page: number, limit: number, userId: number) => {
   try {
     const startIndex = (page - 1) * limit;
     const totalDocs = await prisma.post.count();
@@ -158,7 +158,12 @@ export const getActivePostService = async (page: number, limit: number) => {
     const posts = await prisma.post.findMany({
       skip: startIndex,
       take: limit,
-      where: { deletedAt: null },
+      where: {
+        authorId: {
+          not: userId,
+        },
+        deletedAt: null
+      },
       include: {
         objects: {
           include: {
