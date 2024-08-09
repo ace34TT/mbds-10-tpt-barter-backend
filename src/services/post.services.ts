@@ -41,6 +41,7 @@ export const getPostService = async (postId: number) => {
         suggestions: true,
         author: true,
       },
+      
     });
 
     return post;
@@ -123,6 +124,9 @@ export const getUserPostService = async (authorId: number, page: number, limit: 
         suggestions: true,
         author: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      }
     });
 
     const nextPage = page < totalPages ? page + 1 : null;
@@ -168,6 +172,9 @@ export const getActivePostService = async (page: number, limit: number) => {
         suggestions: true,
         author: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      }
     });
 
     const nextPage = page < totalPages ? page + 1 : null;

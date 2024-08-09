@@ -16,6 +16,9 @@ export const getObjects = async (page: number, limit: number) => {
         include: {
             category: true,
             owner: true,
+        },
+        orderBy: {
+            createdAt: 'desc',
         }
     });
 
@@ -43,7 +46,7 @@ export const getObjectById = async (id: number) => {
     });
 };
 
-export const getObjectByOwner = async (ownerId: number,page: number, limit: number) => {
+export const getObjectByOwner = async (ownerId: number, page: number, limit: number) => {
     const startIndex = (page - 1) * limit;
     const totalDocs = await prisma.object.count();
     const totalPages = Math.ceil(totalDocs / limit);
@@ -53,7 +56,10 @@ export const getObjectByOwner = async (ownerId: number,page: number, limit: numb
             category: true,
             owner: true,
         },
-        where: { ownerId: ownerId }
+        where: { ownerId: ownerId },
+        orderBy: {
+            createdAt: 'desc',
+        }
     });
 
     const nextPage = page < totalPages ? page + 1 : null;
