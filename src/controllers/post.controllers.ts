@@ -3,6 +3,7 @@ import {
   createPostService,
   deletePostService,
   getActivePostService,
+  getExploreItemPostService,
   getPostService,
   updatePostService,
 } from "../services/post.services";
@@ -56,6 +57,20 @@ export const updatePostHandler = async (req: Request, res: Response) => {
     const updatedFields = req.body;
     const updatedPost = await updatePostService(postId, updatedFields);
     return res.status(200).json(updatedPost);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getExploreItemsPostHandler = async (
+  req: Request,
+  res: Response
+) => {
+  // get the user id from the request and use service to get the feed
+  try {
+    const userId = parseInt(req.params.id);
+    const feedPosts = await getExploreItemPostService(userId);
+    return res.status(200).json(feedPosts);
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }

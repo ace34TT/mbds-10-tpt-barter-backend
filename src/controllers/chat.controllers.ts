@@ -7,13 +7,22 @@ import {
 } from "../services/chat.services";
 import { chatSchema, messageSchema } from "../shared/schemas/chat.schema";
 import { z } from "zod";
+import { IMessage } from "../shared/interfaces/mongoModels.interfaces";
 
 export const createChatHandler = async (req: Request, res: Response) => {
   try {
-    chatSchema.parse(req.body);
-    const chat = await createChatService({
-      ...req.body,
-    });
+    const { sender, receiver, messages } = req.body;
+    const convertedMessages = messages.map((message: IMessage) => ({
+      ...message,
+      timestamp: new Date(message.timestamp), // Convert string to Date object
+    }));
+    const _chat = {
+      sender,
+      receiver,
+      messages: convertedMessages,
+    };
+    chatSchema.parse(_chat);
+    const chat = await createChatService(_chat);
     return res.status(200).json({
       message: "Chats get is working",
       chat,
@@ -31,6 +40,7 @@ export const continueChatHandler = async (req: Request, res: Response) => {
   try {
     const chatId = req.params.id;
     const message = req.body;
+    message.timestamp = new Date(message.timestamp);
     messageSchema.parse(message);
     if (!chatId || !message) {
       return res.status(400).json({ message: "Invalid chat id or message" });

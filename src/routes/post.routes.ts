@@ -3,6 +3,7 @@ import {
   createPostHandler,
   deletedPostHandler,
   getActivePostsHandler,
+  getExploreItemsPostHandler,
   getPostHandler,
   updatePostHandler,
 } from "../controllers/post.controllers";
@@ -14,5 +15,6 @@ router.get("/:id", getPostHandler);
 router.post("/", createPostHandler);
 router.delete("/:id", deletedPostHandler);
 router.put("/:id", updatePostHandler);
+router.get("/explore/:id", getExploreItemsPostHandler);
 
 export { router as PostRoutes };

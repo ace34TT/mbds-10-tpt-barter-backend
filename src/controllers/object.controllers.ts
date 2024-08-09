@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { createObject, deleteObject, getObjectById, getObjects, updateObject } from "../services/object.service";
+import {
+  createObject,
+  deleteObject,
+  getObjectById,
+  getObjects,
+  updateObject,
+} from "../services/object.service";
 import { validationResult } from "express-validator";
 import { uploadFileToDrive } from "../services/google.drive.services";
 
@@ -41,21 +47,24 @@ export const deleteObjectHandler = async (req: Request, res: Response) => {
 };
 
 export const createObjectHandler = async (req: Request, res: Response) => {
-  try{
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //   return res.status(400).json({ errors: errors.array() });
-    // }
+  try {
+    console.log(req.body);
 
-    const files: Express.Multer.File[] = req.files as Express.Multer.File[];;
+    const files: Express.Multer.File[] = req.files as Express.Multer.File[];
     if (!files || files.length === 0) {
-      return res.status(400).json({ error: 'No files uploaded' });
+      return res.status(400).json({ error: "No files uploaded" });
     }
 
     const fileIds = await uploadFileToDrive(files);
     const { name, categoryId, description, ownerId, photos } = req.body;
 
-    const newObject = await createObject({ name, categoryId: Number(categoryId), description, ownerId: Number(ownerId), photos: fileIds });
+    const newObject = await createObject({
+      name,
+      categoryId: Number(categoryId),
+      description,
+      ownerId: Number(ownerId),
+      photos: fileIds,
+    });
     return res.status(201).json(newObject);
   } catch (error) {
     console.log(error);
@@ -64,7 +73,6 @@ export const createObjectHandler = async (req: Request, res: Response) => {
 };
 
 export const updateObjectHandler = async (req: Request, res: Response) => {
-
   const { id } = req.params;
   const { name, categoryId, description, ownerId } = req.body;
   try {
@@ -72,11 +80,15 @@ export const updateObjectHandler = async (req: Request, res: Response) => {
     if (!existingObject) {
       return res.status(404).json({ error: "Object not found" });
     }
-    const updatedObject = await updateObject(Number(id), { name: name, categoryId: categoryId, description: description, ownerId: ownerId });
+    const updatedObject = await updateObject(Number(id), {
+      name: name,
+      categoryId: categoryId,
+      description: description,
+      ownerId: ownerId,
+    });
     return res.status(200).json(updatedObject);
   } catch (error) {
-    console.log(error)
-    return res.status(500).json({ error: "Failed to update object" })
-    ;
+    console.log(error);
+    return res.status(500).json({ error: "Failed to update object" });
   }
 };

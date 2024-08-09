@@ -52,7 +52,7 @@ export const createPostService = async (post: IPost) => {
     const _post = await prisma.post.create({
       data: {
         author: { connect: { id: post.authorId } },
-        description: post.desorption,
+        description: post.description,
         objects: {
           connect: post.objectIds.map((objectId) => ({ id: objectId })),
         },
@@ -91,6 +91,35 @@ export const deletePostService = async (postId: number) => {
       data: { deletedAt: new Date() },
     });
     return deletedPost;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getExploreItemPostService = async (userId: number) => {
+  try {
+    const posts = await prisma.post.findMany({
+      where: {
+        authorId: {
+          not: userId,
+        },
+        deletedAt: null,
+      },
+      include: {
+        objects: {
+          include: {
+            object: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+        suggestions: true,
+        author: true,
+      },
+    });
+    return posts;
   } catch (error) {
     throw error;
   }

@@ -61,8 +61,8 @@ model Object {
 model Post {
   id          Int          @id @default(autoincrement())
   author      User         @relation(fields: [authorId], references: [id])
-  description String
   authorId    Int
+  description String       @default("Pas de description")
   objects     ObjectPost[]
   suggestions Suggestion[]
   deletedAt   DateTime?

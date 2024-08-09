@@ -1,12 +1,6 @@
-import {
-  PrismaClient,
-  Post,
-  Suggestion,
-  SuggestionStatus,
-} from "@prisma/client";
+import { PrismaClient, SuggestionStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { Role, User } from "../src/shared/schemas/auth.schema";
-import { Category } from "../src/shared/schemas/main.schema";
 import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
@@ -54,6 +48,15 @@ async function main() {
       password: userPassword,
       roleId: userRole.id,
     },
+    // add another user
+    {
+      name: "Another User",
+      email: "user_2@example.com",
+      username: "user_2",
+      password: userPassword,
+      roleId: userRole.id,
+    },
+    // add another user...
   ];
 
   try {
@@ -64,7 +67,11 @@ async function main() {
   }
 
   // Fetch created users
-  const createdUsers = await prisma.user.findMany();
+  const createdUsers = await prisma.user.findMany({
+    where: {
+      roleId: userRole.id,
+    },
+  });
 
   // Create Categories
   const categories = Array.from({ length: 10 }, () => ({
