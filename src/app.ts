@@ -8,6 +8,7 @@ import { ObjectRoutes } from "./routes/object.routes";
 import { UserRoutes } from "./routes/user.routes";
 import { ReportRoutes } from "./routes/report.routes";
 import Protect from "./middlewares/auth"
+import { RoleRoutes } from "./routes/role.routes";
 
 const app = express();
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -39,6 +40,7 @@ app.use("/api/chats",Protect, ChatRoutes);
 app.use("/api/notifications",Protect, NotificationRoutes);
 app.use("/api/objects",Protect, ObjectRoutes);
 app.use("/api/reports",Protect, ReportRoutes);
-app.use("/api/users",Protect,UserRoutes);
+app.use("/api/users",Protect, UserRoutes);
+app.use("/api/roles", Protect, RoleRoutes);
 
 export default app;

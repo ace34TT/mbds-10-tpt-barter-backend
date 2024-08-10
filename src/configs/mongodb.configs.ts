@@ -8,6 +8,7 @@ const uri = process.env.MONGODB_URL || "";
 export async function runMongoDbConnection() {
   try {
     mongoose.connect(uri);
+    console.log("Connected to MongoDB successfully");
   } catch (error) {
     console.log(error);
   }
