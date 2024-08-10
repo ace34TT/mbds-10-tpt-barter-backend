@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../configs/prisma.configs'; 
+import { getUsersWithPagination } from '../services/user.services';
 
 // Créer un nouvel utilisateur
 export const createUser = async (req: Request, res: Response) => {
@@ -72,5 +73,29 @@ export const deleteUser = async (req: Request, res: Response) => {
     res.json({ message: 'Utilisateur supprimé avec succès' });
   } catch (error) {
     res.status(500).json({ error });
+  }
+};
+
+
+// ADMIN
+export const getUsersAdminHandler = async (req: Request, res: Response) => {
+  
+  try{
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const users = await getUsersWithPagination(page, limit);
+    const totalUsers = await prisma.user.count();
+    return res.status(200).json({
+      data: users,
+      meta: {
+        page,
+        limit,
+        total: totalUsers,
+        totalPages: Math.ceil(totalUsers / limit),
+      },
+    });
+  } catch(error) {
+    console.log(error);
+    return res.status(500).json({ error: "Failed to fetch users" });
   }
 };

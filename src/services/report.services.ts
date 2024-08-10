@@ -72,3 +72,39 @@ export const getUserReports = async (userid: number): Promise<IReport[]> => {
 export const getReportById = async (id: string): Promise<IReport | null> => {
     return await Report.findById(id);
 };
+
+
+// admin
+export const getReportsAdmin = async (type?: 'user' | 'post', statut?: 'pending' | 'rejected' | 'accepted',  page: number = 1, limit: number = 10): Promise<{ data: IReport[], meta: { page: number, limit: number, total: number, totalPages: number } }> => {
+    const query: any = {};
+    if (type) {
+        if (type === 'user') {
+            query.userReport = { $exists: true };
+        } else if (type === 'post') {
+            query.objetReport = { $exists: true };
+        }
+    }
+
+    if(statut){
+        query.statut = statut;
+    }
+
+    // Calculate total number of reports
+    const totalReports = await Report.countDocuments(query);
+
+    // Fetch paginated reports
+    const reports = await Report.find(query)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+    
+    return {
+        data: reports,
+        meta: {
+            page,
+            limit,
+            total: totalReports,
+            totalPages: Math.ceil(totalReports / limit),
+        },
+    };
+};

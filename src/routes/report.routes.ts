@@ -1,8 +1,10 @@
 import express from "express";
-import { addPostReportHandler, addUserReportHandler, getReportByIdHandler, getReportsHandler, getUserReportsHandler, updatePostReportHandler, updateReportHandler, updateUserReportHandler } from "../controllers/report.controllers";
+import { addPostReportHandler, addUserReportHandler, getReportByIdHandler, getReportsAdminHandler, getReportsHandler, getUserReportsHandler, updatePostReportHandler, updateReportHandler, updateUserReportHandler } from "../controllers/report.controllers";
 import { postReportValidation, reportTypeValidation, statusUpdateValidation, userReportValidation } from "../validators/report.validators";
 
 const router = express.Router();
+//ADMIN
+router.get('/admin', reportTypeValidation, getReportsAdminHandler);
 
 router.get('/', reportTypeValidation, getReportsHandler);
 router.post('/user', userReportValidation, addUserReportHandler);
