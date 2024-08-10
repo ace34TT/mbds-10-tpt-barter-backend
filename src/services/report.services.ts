@@ -42,7 +42,7 @@ export const updatePostReport = async (id: string, statut: string): Promise<IRep
     return await Report.findByIdAndUpdate(id, { statut, updatedAt: new Date() }, { new: true });
 };
 
-export const getReports = async (type?: 'user' | 'post'): Promise<IReport[]> => {
+export const getReports = async (type?: 'user' | 'post', statut?: 'pending' | 'rejected' | 'accepted'): Promise<IReport[]> => {
     const query: any = {};
     if (type) {
         if (type === 'user') {
@@ -50,10 +50,13 @@ export const getReports = async (type?: 'user' | 'post'): Promise<IReport[]> => 
         } else if (type === 'post') {
             query.objetReport = { $exists: true };
         }
-        return await Report.find(query);
-    } else {
-        return await Report.find();
     }
+
+    if(statut){
+        query.statut = statut;
+    }
+    
+    return await Report.find(query);
 };
 
 export const getUserReports = async (userid: number): Promise<IReport[]> => {

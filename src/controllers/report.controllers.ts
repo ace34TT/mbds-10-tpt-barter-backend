@@ -109,8 +109,8 @@ export const updatePostReportHandler = async (req: Request, res: Response) => {
 
 export const getReportsHandler = async (req: Request, res: Response) => {
   try {
-    const { type } = req.query;
-    const reports = await reportService.getReports(type as 'user' | 'post');
+    const { type, statut } = req.query;
+    const reports = await reportService.getReports(type as 'user' | 'post', statut as 'pending' | 'rejected' | 'accepted');
     res.status(200).json(reports);
   } catch (error) {
     res.status(500).json(error);
