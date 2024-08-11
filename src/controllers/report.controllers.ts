@@ -109,8 +109,8 @@ export const updatePostReportHandler = async (req: Request, res: Response) => {
 
 export const getReportsHandler = async (req: Request, res: Response) => {
   try {
-    const { type } = req.query;
-    const reports = await reportService.getReports(type as 'user' | 'post');
+    const { type, statut } = req.query;
+    const reports = await reportService.getReports(type as 'user' | 'post', statut as 'pending' | 'rejected' | 'accepted');
     res.status(200).json(reports);
   } catch (error) {
     res.status(500).json(error);
@@ -150,5 +150,19 @@ export const getReportByIdHandler = async (req: Request, res: Response) => {
     }
   } catch (error) {
     res.status(500).json({ message: error });
+  }
+};
+
+
+// admin
+export const getReportsAdminHandler = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const { type, statut } = req.query;
+    const reports = await reportService.getReportsAdmin(type as 'user' | 'post', statut as 'pending' | 'rejected' | 'accepted', page, limit);
+    res.status(200).json(reports);
+  } catch (error) {
+    res.status(500).json(error);
   }
 };

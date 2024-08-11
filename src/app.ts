@@ -12,6 +12,8 @@ import { errorHandler } from "./middlewares/error.middleware";
 import cors from "cors";
 import { PostRoutes } from "./routes/post.routes";
 import { SuggestionRoutes } from "./routes/suggestion.routes";
+import { DashboardRoutes } from "./routes/dashboard.routes";
+import { RoleRoutes } from "./routes/role.routes";
 
 const app = express();
 app.use(cors({}));
@@ -34,6 +36,8 @@ app.use("/api/posts", PostRoutes);
 app.use("/api/reports", Protect, ReportRoutes);
 app.use("/api/users", Protect, UserRoutes);
 app.use("/api/suggestions", SuggestionRoutes);
+app.use("/api/dashboard",Protect, DashboardRoutes);
+app.use("/api/roles", Protect, RoleRoutes);
 
 app.use(async (err: Error, req: Request, res: Response, next: NextFunction) => {
   if (!errorHandler.isTrustedError(err)) {
