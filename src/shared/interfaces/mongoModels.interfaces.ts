@@ -5,7 +5,7 @@ export interface IMessage {
 }
 
 export interface IEmbedUser {
-  id: string;
+  id: number;
   name: string;
   username: string;
   email: string;

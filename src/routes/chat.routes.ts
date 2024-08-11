@@ -5,14 +5,15 @@ import {
   deleteChatHandler,
   getChatByIdHandler,
   getChatByParticipantsHandler,
+  getChatsByUserHandler,
 } from "../controllers/chat.controllers";
 import { getChatByUserService } from "../services/chat.services";
 
 const router = express.Router();
 
 router.get("/:id", getChatByIdHandler);
-router.post("/", createChatHandler);
-router.get("/:userId", getChatByUserService);
+router.get("/user/:id", getChatsByUserHandler);
+router.post("/", createChatHandler); 
 router.delete("/:id", deleteChatHandler);
 router.patch("/continue/:id", continueChatHandler);
 router.get("/participant/:senderId/:receiverId", getChatByParticipantsHandler);
