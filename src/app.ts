@@ -16,9 +16,29 @@ import { DashboardRoutes } from "./routes/dashboard.routes";
 import { RoleRoutes } from "./routes/role.routes";
 
 const app = express();
-app.use(cors({}));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+
+const corsOptions = {
+  origin:['https://localhost:4200'],
+  optionsSuccessStatus: 200
+}
+
+app.use(cors(corsOptions));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+  );
+  next();
+});
+
 
 // !
 app.get("/", (req: Request, res: Response) => {
