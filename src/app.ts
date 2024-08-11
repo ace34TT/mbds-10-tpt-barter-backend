@@ -9,6 +9,7 @@ import { UserRoutes } from "./routes/user.routes";
 import { ReportRoutes } from "./routes/report.routes";
 import Protect from "./middlewares/auth"
 import { RoleRoutes } from "./routes/role.routes";
+import { DashboardRoutes } from "./routes/dashboard.routes";
 
 const app = express();
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -34,7 +35,10 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
+
+
 app.use("/api/auth",AuthRoutes);
+app.use("/api/dashboard",Protect, DashboardRoutes);
 app.use("/api/categories",Protect, CategoryRoutes);
 app.use("/api/chats",Protect, ChatRoutes);
 app.use("/api/notifications",Protect, NotificationRoutes);
