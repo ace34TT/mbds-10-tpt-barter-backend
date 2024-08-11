@@ -108,7 +108,6 @@ async function main() {
 
   // Fetch created objects
   const createdObjects = await prisma.object.findMany();
-
   // Create Posts
   const posts = Array.from({ length: 30 }, () => ({
     authorId: faker.helpers.arrayElement(createdUsers).id,
@@ -125,51 +124,69 @@ async function main() {
   // Fetch created posts
   const createdPosts = await prisma.post.findMany();
 
-  // Create ObjectPosts
-  const objectPosts = Array.from({ length: 60 }, () => ({
-    objectId: faker.helpers.arrayElement(createdObjects).id,
-    postId: faker.helpers.arrayElement(createdPosts).id,
-  }));
+  // Ensure createdObjects is not empty
+  if (createdObjects.length > 0) {
+    // Create ObjectPosts ensuring each post gets at least one object
+    const objectPosts = createdPosts.flatMap((post) => {
+      return {
+        objectId: faker.helpers.arrayElement(createdObjects).id,
+        postId: post.id,
+      };
+    });
 
-  try {
-    await prisma.objectPost.createMany({ data: objectPosts });
-    console.log("ObjectPosts inserted successfully.");
-  } catch (error) {
-    console.error("Error inserting objectPosts:", error);
+    // Additional ObjectPosts if needed
+    const additionalObjectPosts = Array.from(
+      { length: 60 - createdPosts.length },
+      () => ({
+        objectId: faker.helpers.arrayElement(createdObjects).id,
+        postId: faker.helpers.arrayElement(createdPosts).id,
+      })
+    );
+
+    const allObjectPosts = [...objectPosts, ...additionalObjectPosts];
+
+    try {
+      await prisma.objectPost.createMany({ data: allObjectPosts });
+      console.log("ObjectPosts inserted successfully.");
+    } catch (error) {
+      console.error("Error inserting objectPosts:", error);
+    }
+  } else {
+    console.log("No objects available to create objectPosts.");
   }
 
-  // Create Suggestions
-  const suggestions = Array.from({ length: 20 }, () => ({
-    status: faker.helpers.arrayElement([
-      SuggestionStatus.PENDING,
-      SuggestionStatus.ACCEPTED,
-      SuggestionStatus.DECLINED,
-    ]),
-    postId: faker.helpers.arrayElement(createdPosts).id,
-  }));
+  // // Create Suggestions
+  // const suggestions = Array.from({ length: 20 }, () => ({
+  //   status: faker.helpers.arrayElement([
+  //     SuggestionStatus.PENDING,
+  //     SuggestionStatus.ACCEPTED,
+  //     SuggestionStatus.DECLINED,
+  //   ]),
+  //   postId: faker.helpers.arrayElement(createdPosts).id,
+  // }));
 
-  try {
-    await prisma.suggestion.createMany({ data: suggestions });
-    console.log("Suggestions inserted successfully.");
-  } catch (error) {
-    console.error("Error inserting suggestions:", error);
-  }
+  // try {
+  //   await prisma.suggestion.createMany({ data: suggestions });
+  //   console.log("Suggestions inserted successfully.");
+  // } catch (error) {
+  //   console.error("Error inserting suggestions:", error);
+  // }
 
-  // Fetch created suggestions
-  const createdSuggestions = await prisma.suggestion.findMany();
+  // // Fetch created suggestions
+  // const createdSuggestions = await prisma.suggestion.findMany();
 
-  // Create ObjectSuggestions
-  const objectSuggestions = Array.from({ length: 40 }, () => ({
-    objectId: faker.helpers.arrayElement(createdObjects).id,
-    suggestionId: faker.helpers.arrayElement(createdSuggestions).id,
-  }));
+  // // Create ObjectSuggestions
+  // const objectSuggestions = Array.from({ length: 40 }, () => ({
+  //   objectId: faker.helpers.arrayElement(createdObjects).id,
+  //   suggestionId: faker.helpers.arrayElement(createdSuggestions).id,
+  // }));
 
-  try {
-    await prisma.objectSuggestion.createMany({ data: objectSuggestions });
-    console.log("ObjectSuggestions inserted successfully.");
-  } catch (error) {
-    console.error("Error inserting objectSuggestions:", error);
-  }
+  // try {
+  //   await prisma.objectSuggestion.createMany({ data: objectSuggestions });
+  //   console.log("ObjectSuggestions inserted successfully.");
+  // } catch (error) {
+  //   console.error("Error inserting objectSuggestions:", error);
+  // }
 
   console.log("Seeding completed successfully");
 }

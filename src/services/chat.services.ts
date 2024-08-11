@@ -53,3 +53,21 @@ export const deleteChatByIdService = async (chatId: string) => {
     );
   }
 };
+
+export const findChatByParticipantsService = async (
+  senderId: string,
+  receiverId: string
+) => {
+  try {
+    const result = await Chat.findOne({
+      $or: [
+        { $and: [{ "sender.id": senderId }, { "receiver.id": receiverId }] },
+        { $and: [{ "sender.id": receiverId }, { "receiver.id": senderId }] },
+      ],
+    });
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};

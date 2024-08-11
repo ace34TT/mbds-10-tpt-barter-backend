@@ -4,6 +4,7 @@ import {
   deleteObject,
   getObjectById,
   getObjects,
+  getObjectsByUser,
   updateObject,
 } from "../services/object.service";
 import { validationResult } from "express-validator";
@@ -90,5 +91,15 @@ export const updateObjectHandler = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Failed to update object" });
+  }
+};
+
+export const getObjectByUserHandler = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    const objects = await getObjectsByUser(Number(userId));
+    return res.status(200).json(objects);
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to retrieve objects" });
   }
 };

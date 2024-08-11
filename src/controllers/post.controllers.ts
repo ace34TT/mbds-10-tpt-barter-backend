@@ -66,9 +66,9 @@ export const getExploreItemsPostHandler = async (
   req: Request,
   res: Response
 ) => {
-  // get the user id from the request and use service to get the feed
   try {
-    const userId = parseInt(req.params.id);
+    const userId = parseInt(req.params.userId);
+    console.log("fetching data ", userId);
     const feedPosts = await getExploreItemPostService(userId);
     return res.status(200).json(feedPosts);
   } catch (error) {

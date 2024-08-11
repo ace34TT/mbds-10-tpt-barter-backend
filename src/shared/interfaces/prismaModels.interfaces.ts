@@ -78,6 +78,7 @@ export interface ISuggestion {
   status: SuggestionStatus; // Enum SuggestionStatus
   post: IPost; // Direct relation to Post
   postId: number;
+  objectIds: number[];
   deletedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;

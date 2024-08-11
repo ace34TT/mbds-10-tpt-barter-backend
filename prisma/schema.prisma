@@ -23,17 +23,18 @@ model Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  username  String
-  password  String
-  role      Role     @relation(fields: [roleId], references: [id])
-  roleId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Objects   Object[]
-  Posts     Post[]
+  id         Int          @id @default(autoincrement())
+  name       String
+  email      String       @unique
+  username   String
+  password   String
+  role       Role         @relation(fields: [roleId], references: [id])
+  roleId     Int
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Objects    Object[]
+  Posts      Post[]
+  Suggestion Suggestion[]
 }
 
 model Category {
@@ -92,9 +93,11 @@ enum SuggestionStatus {
 
 model Suggestion {
   id              Int                @id @default(autoincrement())
-  status          SuggestionStatus
+  status          SuggestionStatus   @default(PENDING)
   post            Post               @relation(fields: [postId], references: [id])
   postId          Int
+  suggestedBy     User               @relation(fields: [suggestedById], references: [id])
+  suggestedById   Int
   suggestedObject ObjectSuggestion[]
   deletedAt       DateTime?
   createdAt       DateTime           @default(now())
@@ -103,8 +106,8 @@ model Suggestion {
 
 model ObjectSuggestion {
   id           Int        @id @default(autoincrement())
+  objectId     Int        @unique
   object       Object     @relation(fields: [objectId], references: [id])
-  objectId     Int
   suggestion   Suggestion @relation(fields: [suggestionId], references: [id])
   suggestionId Int
   deletedAt    DateTime?

@@ -24,7 +24,7 @@ const objectSchema = z.object({
 });
 
 // Post schema
-const postSchema = z.object({
+export const postSchema = z.object({
   id: idSchema,
   authorId: idSchema,
   deletedAt: optionalDateSchema,
@@ -45,3 +45,4 @@ const objectPostSchema = z.object({
 export type Category = z.infer<typeof categorySchema>;
 export type Object = z.infer<typeof objectSchema>;
 export type Post = z.infer<typeof postSchema>;
+export type ObjectPost = z.infer<typeof objectPostSchema>;

@@ -3,6 +3,7 @@ import {
   continueChatService,
   createChatService,
   deleteChatByIdService,
+  findChatByParticipantsService,
   getChatByUserService,
 } from "../services/chat.services";
 import { chatSchema, messageSchema } from "../shared/schemas/chat.schema";
@@ -117,5 +118,26 @@ export const getChatsByUserHandler = async (req: Request, res: Response) => {
         .status(500)
         .json({ message: "An error occurred while getting the chats" });
     }
+  }
+};
+
+export const getChatByParticipantsHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { senderId, receiverId } = req.params;
+    if (!senderId || !receiverId)
+      return res
+        .status(400)
+        .json({ message: "senderId and receiverId are required" });
+    const chat = await findChatByParticipantsService(senderId, receiverId);
+    if (!chat)
+      return res.status(400).json({
+        message: `chat with participant : ${senderId} and ${receiverId} not found`,
+      });
+    return res.status(200).json(chat);
+  } catch (error) {
+    return res.status(500).json(error);
   }
 };
