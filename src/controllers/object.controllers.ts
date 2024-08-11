@@ -99,7 +99,7 @@ export const deleteObjectStatus = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Failed to delete object" });
   }
 };
-
+/*
 export const createObjectHandler = async (req: Request, res: Response) => {
   try{
     // const errors = validationResult(req);
@@ -122,6 +122,60 @@ export const createObjectHandler = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Failed to create object" });
   }
 };
+*/
+
+interface MulterRequestWithFiles extends Request {
+  files: Express.Multer.File[];
+}
+
+export const createObjectHandler = async (req: Request, res: Response) => {
+  try{
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //   return res.status(400).json({ errors: errors.array() });
+    // }
+
+    // const files: Express.Multer.File[] = req.files as Express.Multer.File[];;
+    // if (!files || files.length === 0) {
+    //   return res.status(400).json({ error: 'No files uploaded' });
+    // }
+
+    // const fileIds = await uploadFileToDrive(files);
+    const reqfiles = req as MulterRequestWithFiles;
+    console.log(reqfiles);
+
+    console.log(req.body);
+
+    if (!reqfiles || reqfiles.files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded' });
+    }
+
+    const bucketName = process.env.SPACES_NAME!;
+    const cdnUrl = `https://${bucketName}.ams3.cdn.digitaloceanspaces.com`;
+
+    const fileIds = reqfiles.files.map(files => {
+      var file = files as Express.MulterS3.File;
+      return `${cdnUrl}/${file.key}`;
+    });
+
+    const { name, categoryId, description, ownerId } = req.body;
+
+    const newObject = {
+      name,
+      categoryId: Number(categoryId),
+      description,
+      ownerId: Number(ownerId),
+      photos: fileIds
+    };
+
+    var createdObject = await createObject(newObject);
+
+    return res.status(201).json(createdObject);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Failed to create object" });
+  }
+};
 
 export const updateObjectHandler = async (req: Request, res: Response) => {
 
@@ -139,5 +193,52 @@ export const updateObjectHandler = async (req: Request, res: Response) => {
     console.log(error)
     return res.status(500).json({ error: "Failed to update object" })
     ;
+  }
+};
+
+
+export const updateObjectWithPhoto = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, categoryId, description, ownerId } = req.body;
+  const reqfiles = req as MulterRequestWithFiles;
+
+  console.log( req.body);
+
+  try {
+    // Récupérer l'objet existant
+    const existingObject = await getObjectById(Number(id));
+    if (!existingObject) {
+      return res.status(404).json({ error: "Object not found" });
+    }
+
+    // Conserver les photos existantes
+    const existingPhotos = existingObject.photos || [];
+    
+    // Ajouter les nouvelles photos
+    const bucketName = process.env.SPACES_NAME!;
+    const cdnUrl = `https://${bucketName}.ams3.cdn.digitaloceanspaces.com`;
+    
+    const newPhotoUrls = reqfiles.files.map(files => {
+      var file = files as Express.MulterS3.File;
+      return `${cdnUrl}/${file.key}`;
+    });
+
+
+    // Combiner les anciennes et nouvelles photos
+    const updatedPhotos = [...existingPhotos, ...newPhotoUrls];
+
+    // Mettre à jour l'objet
+    const updatedObject = await updateObject(Number(id), {
+      name,
+      categoryId: Number(categoryId),
+      description,
+      ownerId: Number(ownerId),
+      photos: updatedPhotos
+    });
+
+    return res.status(201).json(updatedObject);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Failed to update object" });
   }
 };

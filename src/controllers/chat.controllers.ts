@@ -4,21 +4,33 @@ import {
   createChatService,
   deleteChatByIdService,
   getChatByUserService,
+  getChatByIdService
 } from "../services/chat.services";
-import { chatSchema, messageSchema } from "../shared/schemas/chst.schema";
+import { chatSchema, messageSchema } from "../shared/schemas/chat.schema";
 import { z } from "zod";
+import { IMessage } from "../shared/interfaces/mongoModels.interfaces";
 
 export const createChatHandler = async (req: Request, res: Response) => {
   try {
-    chatSchema.parse(req.body);
-    const chat = await createChatService({
-      ...req.body,
-    });
+    const { sender, receiver, messages } = req.body;
+    console.log(req.body);
+    const convertedMessages = messages.map((message: IMessage) => ({
+      ...message,
+      timestamp: new Date(message.timestamp), // Convert string to Date object
+    }));
+    const _chat = {
+      sender,
+      receiver,
+      messages: convertedMessages,
+    };
+    chatSchema.parse(_chat);
+    const chat = await createChatService(_chat);
     return res.status(200).json({
       message: "Chats get is working",
       chat,
     });
-  } catch (error) {
+  } catch (error : any) {
+    console.log(error.message);
     if (error instanceof z.ZodError) {
       res.status(400).json({
         message: "Validation failed",
@@ -31,7 +43,10 @@ export const continueChatHandler = async (req: Request, res: Response) => {
   try {
     const chatId = req.params.id;
     const message = req.body;
+    console.log(message);
+    message.timestamp = new Date(message.timestamp);
     messageSchema.parse(message);
+    console.log(message);
     if (!chatId || !message) {
       return res.status(400).json({ message: "Invalid chat id or message" });
     }
@@ -40,6 +55,7 @@ export const continueChatHandler = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "Chat updated successfully", chat: updatedChat });
   } catch (error: any) {
+    console.log(error.message);
     if (error instanceof z.ZodError) {
       res.status(400).json({
         message: "Validation failed",
@@ -76,12 +92,14 @@ export const deleteChatHandler = async (req: Request, res: Response) => {
 export const getChatByIdHandler = async (req: Request, res: Response) => {
   try {
     const chatId = req.params.id;
+    console.log(chatId);
     if (!chatId) {
       return res.status(400).json({ message: "Invalid chat id" });
     }
-    const chat = await getChatByUserService(chatId);
+    const chat = await getChatByIdService(chatId);
     return res.status(200).json(chat);
   } catch (error: any) {
+    console.log(error.message);
     if (error.message.includes("not found")) {
       res.status(404).json({ message: error.message });
     } else {

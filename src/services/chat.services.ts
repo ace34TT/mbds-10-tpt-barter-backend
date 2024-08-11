@@ -11,6 +11,7 @@ export const createChatService = async (chat: IChat) => {
     await _chat.save();
     return _chat;
   } catch (error: any) {
+    console.log(error.message);
     throw new Error(error);
   }
 };
@@ -23,14 +24,16 @@ export const continueChatService = (chatId: string, message: IMessage) => {
     );
     return chat;
   } catch (error: any) {
+    console.log(error.message);
     throw new Error(error);
   }
 };
 export const getChatByUserService = (userId: string) => {
   try {
-    const chats = Chat.find({ sender: userId }).exec();
+    const chats = Chat.find({ "sender.id": userId }).exec();
     return chats;
   } catch (error: any) {
+    console.log(error.message);
     throw new Error(error);
   }
 };

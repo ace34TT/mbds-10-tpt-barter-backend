@@ -1,0 +1,53 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "barter",
+    "collectionId": "e6502393-2602-4174-8faf-eea0a19fedbd",
+    "dateExported": "2024-08-08T18:33:34.399Z",
+    "version": "1.2",
+    "folders": [
+        {
+            "_id": "d13e7a1a-377c-4140-ab87-9ebcba738aa4",
+            "name": "chat",
+            "containerId": "",
+            "created": "2024-08-08T18:32:56.314Z",
+            "sortNum": 10000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "9f1037ce-79c2-40c3-b2e8-0905f157960f",
+            "colId": "e6502393-2602-4174-8faf-eea0a19fedbd",
+            "containerId": "d13e7a1a-377c-4140-ab87-9ebcba738aa4",
+            "name": "localhost:3000/api/chats",
+            "url": "localhost:3000/api/chats",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-08-08T18:32:35.771Z",
+            "modified": "2024-08-08T18:32:35.771Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"sender\": {\n    \"id\": \"2\",\n    \"name\": \"Regular User\",\n    \"email\": \"user@example.com\",\n    \"username\": \"user\"\n  },\n  \"receiver\": {\n    \"id\": \"3\",\n    \"name\": \"Another User\",\n    \"email\": \"user_2@example.com\",\n    \"username\": \"user_2\"\n  },\n  \"messages\": [\n    {\n      \"author\": \"sender\",\n      \"text\": \"Hello, this is a test message.\",\n      \"timestamp\": \"2022-01-01T12:02\"\n    }\n  ]\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "f6d8fd3d-0616-475e-a053-e63c741b5d4c",
+            "colId": "e6502393-2602-4174-8faf-eea0a19fedbd",
+            "containerId": "d13e7a1a-377c-4140-ab87-9ebcba738aa4",
+            "name": "localhost:3000/api/chats/continue/66b50c344c9ab61d6306c2ab",
+            "url": "localhost:3000/api/chats/continue/66b50c344c9ab61d6306c2ab",
+            "method": "PATCH",
+            "sortNum": 20000,
+            "created": "2024-08-08T18:32:45.582Z",
+            "modified": "2024-08-08T18:32:45.582Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"author\": \"receiver\",\n  \"text\": \"Hello, this is a test message.\",\n  \"timestamp\": \"2022-01-01T09:02:00.000Z\"\n}",
+                "form": []
+            }
+        }
+    ],
+    "ref": "vpY8nc7htYFbLSSk2v69jqITDVK9qYC76zTPqakvJkPAVl7D15CFfFuiFecgiX1tWcg0BNCMMyrwRP7Z-jEZgA"
+}
