@@ -10,7 +10,7 @@ import {
 
 const router = express.Router();
 
-router.get("/", getActivePostsHandler);
+router.get("/explore/:id", getActivePostsHandler);
 router.get("/:id", getPostHandler);
 router.get("/user/:id", getUserPostHandler);
 router.post("/", createPostHandler);
