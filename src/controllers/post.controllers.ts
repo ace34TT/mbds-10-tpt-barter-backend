@@ -3,10 +3,10 @@ import {
   deletePostService,
   getActivePostService,
   getExploreItemPostService,
-  getPostService,
   getUserPostService,
   updatePostService,
-  getPostService
+  getPostService,
+  getAllPostService
 } from "../services/post.services";
 import { Request, Response } from "express";
 
@@ -47,7 +47,7 @@ export const getPostsPaginated = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 0;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const result = await getPostService(page, limit);
+    const result = await getAllPostService(page, limit);
     
     return res.status(200).json(result);
   } catch (error) {

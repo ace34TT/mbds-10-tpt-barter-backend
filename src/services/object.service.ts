@@ -104,7 +104,7 @@ export const getObjectByIdAllData = async (id: number) => {
   }
 };
 
-export const getObjectByOwner= async (id: number) => {
+/*export const getObjectByOwner = async (id: number) => {
   try {
     const object = await prisma.object.findMany({
       where: { ownerId: id },
@@ -125,7 +125,7 @@ export const getObjectByOwner= async (id: number) => {
     console.error("Error retrieving object by ID:", error);
     throw new Error("Failed to retrieve object");
   }
-};
+};*/
 
 export const getObjectsPagin = async (page: number, limit: number) => {
     try {
@@ -213,6 +213,7 @@ export const updateObject = async (
     categoryId?: number;
     description?: string;
     ownerId?: number;
+    photos : string[];
   }
 ) => {
   return prisma.object.update({

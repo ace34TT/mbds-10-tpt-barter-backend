@@ -1,4 +1,4 @@
-import { createObjectHandler, deleteObjectHandler, getObjectByIdHandler, getObjectByOwnerHandler, getObjectsHandler, updateObjectHandler } from "../controllers/object.controllers";
+import { createObjectHandler, deleteObjectHandler, getObjectByIdHandler, getObjectByOwnerHandler, getObjectByUserHandler, getObjectsHandler, updateObjectHandler } from "../controllers/object.controllers";
 import express from "express";
 import { createObjectValidationRules } from "../validators/objet.validator";
 import dotenv from "dotenv";

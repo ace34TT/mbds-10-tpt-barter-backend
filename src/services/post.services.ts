@@ -243,3 +243,32 @@ export const getActivePostService = async (page: number, limit: number, userId: 
     };
   } catch (error) { }
 };
+
+export const getExploreItemPostService = async (userId: number) => {
+  try {
+    const posts = await prisma.post.findMany({
+      where: {
+        authorId: {
+          not: userId,
+        },
+        deletedAt: null,
+      },
+      include: {
+        objects: {
+          include: {
+            object: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+        suggestions: true,
+        author: true,
+      },
+    });
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+};
