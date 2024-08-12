@@ -241,7 +241,9 @@ export const getActivePostService = async (page: number, limit: number, userId: 
       hasNextPage,
       hasPrevPage,
     };
-  } catch (error) { }
+  } catch (error) { 
+    throw error;
+  }
 };
 
 export const getExploreItemPostService = async (userId: number) => {

@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.616.0",
+    "@faker-js/faker": "^8.4.1",
     "@prisma/client": "^5.16.1",
     "aws-sdk": "^2.1659.0",
     "bcrypt": "^5.1.1",

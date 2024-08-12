@@ -49,10 +49,10 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/auth", AuthRoutes);
 app.use("/api/categories", Protect, CategoryRoutes);
-app.use("/api/chats", ChatRoutes);
+app.use("/api/chats", Protect,ChatRoutes);
 app.use("/api/notifications", Protect, NotificationRoutes);
 app.use("/api/objects", Protect, ObjectRoutes);
-app.use("/api/posts", PostRoutes);
+app.use("/api/posts",Protect, PostRoutes);
 app.use("/api/reports", Protect, ReportRoutes);
 app.use("/api/users", Protect, UserRoutes);
 app.use("/api/suggestions", SuggestionRoutes);

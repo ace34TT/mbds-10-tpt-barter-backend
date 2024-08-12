@@ -20,6 +20,5 @@ router.get("/pagin", getPostsPaginated);
 router.post("/", createPostHandler);
 router.delete("/:id", deletedPostHandler);
 router.put("/:id", updatePostHandler);
-router.get("/explore/:userId", getExploreItemsPostHandler);
 
 export { router as PostRoutes };

@@ -73,3 +73,99 @@ export const updateSuggestionStatusService = async (
     await prisma.$disconnect();
   }
 };
+
+export const getSuggestionsBySuggestedByIdAndStatus = async (authorId: number, page: number, limit: number, status?: SuggestionStatus) => {
+  try {
+    const startIndex = (page - 1) * limit;
+    const totalDocs = await prisma.suggestion.count();
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    const suggestions = await prisma.suggestion.findMany({
+      skip: startIndex,
+      take: limit,
+      where: {
+        post: {
+          authorId: authorId, 
+        },
+        ...(status && { status: status }),
+        deletedAt: null,
+      },
+      include: {
+        suggestedObject: {
+          include: {
+            object: true,
+            suggestion: true,
+          },
+        },
+        post: true,        
+        suggestedBy: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      }
+    });
+
+    const nextPage = page < totalPages ? page + 1 : null;
+    const prevPage = page > 1 ? page - 1 : null;
+
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return {
+      data: suggestions,
+      totalDocs,
+      totalPages,
+      nextPage,
+      prevPage,
+      hasNextPage,
+      hasPrevPage,
+    };
+  } catch (error) {
+    console.error('Error fetching suggestions:', error);
+    throw error;
+  }
+};
+
+export const getAllSuggestionsByStatus = async (page: number, limit: number, status?: SuggestionStatus) => {
+  try {
+    const startIndex = (page - 1) * limit;
+    const totalDocs = await prisma.suggestion.count();
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    const suggestions = await prisma.suggestion.findMany({
+      where: {
+        ...(status && { status: status }),
+        deletedAt: null,
+      },
+      include: {
+        suggestedObject: {
+          include: {
+            object: true,
+            suggestion: true,
+          },
+        },
+        post: true,        
+        suggestedBy: true,
+      },
+    });
+
+    const nextPage = page < totalPages ? page + 1 : null;
+    const prevPage = page > 1 ? page - 1 : null;
+
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return {
+      data: suggestions,
+      totalDocs,
+      totalPages,
+      nextPage,
+      prevPage,
+      hasNextPage,
+      hasPrevPage,
+    };
+  } catch (error) {
+    console.error('Error fetching suggestions:', error);
+    throw error;
+  }
+};
