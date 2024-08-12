@@ -18,13 +18,13 @@ import { RoleRoutes } from "./routes/role.routes";
 const app = express();
 
 const corsOptions = {
-  origin:['https://localhost:4200'],
+  origin:['http://localhost:4200'],
   optionsSuccessStatus: 200
 }
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader("Access-Control-Allow-Origin", "*");

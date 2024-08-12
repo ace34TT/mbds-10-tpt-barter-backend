@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { createObject, deleteObject, getObjectById, getObjectByOwner, getObjects, getObjectsByUser, updateObject } from "../services/object.service";
+import { createObject, deleteObject, getObjectById, getObjectByOwner, getObjects, getObjectByOwnerList, getObjectsByUser, updateObject } from "../services/object.service";
 import dotenv from "dotenv";
 import { APIError } from "../shared/utils/errors/BaseError";
 import { getObjectByIdAllData, getObjectsPagin, deleteObjectService} from "../services/object.service";
@@ -56,17 +56,17 @@ export const getObjectByIdAllDataHandler = async (req: Request, res: Response) =
   }
 };
 
-/*export const getObjectByOwnerHandler = async (req: Request, res: Response) => {
+export const getObjectByOwnerListHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const object = await getObjectByOwner(Number(id));
+    const object = await getObjectByOwnerList(Number(id));
     return res.status(200).json(object);
   } catch (error: any) {
     console.error("Error in getObjectByIdController:", error);
     return res.status(404).json({ error: error.message });
   }
-};*/
+};
 
 export const getObjectByIdHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
