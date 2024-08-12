@@ -8,8 +8,6 @@ import {
   getUserPostHandler,
   updatePostHandler,
   getPostsPaginated,
-  addSuggestionToPost,
-  getSuggestions
 } from "../controllers/post.controllers";
 
 const router = express.Router();
@@ -24,7 +22,6 @@ router.delete("/:id", deletedPostHandler);
 router.put("/:id", updatePostHandler);
 router.get("/explore/:userId", getExploreItemsPostHandler);
 
-router.get("/suggestion/:id", getSuggestions);
-router.post("/suggestion/:id", addSuggestionToPost);
+
 
 export { router as PostRoutes };

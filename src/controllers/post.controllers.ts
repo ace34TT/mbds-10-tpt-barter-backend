@@ -7,8 +7,6 @@ import {
   updatePostService,
   getPostService,
   getAllPostService,
-  addSuggestionToPostService,
-  getPostSuggestions
 } from "../services/post.services";
 import { Request, Response } from "express";
 
@@ -75,6 +73,7 @@ export const createPostHandler = async (req: Request, res: Response) => {
 export const deletedPostHandler = async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.id);
+    console.log(postId);
     const deletedPost = await deletePostService(postId);
     return res.status(200).json(deletedPost);
   } catch (error) {
@@ -125,33 +124,3 @@ export const getUserPostHandler = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-export const addSuggestionToPost = async (req: Request, res: Response) => {
-  try {
-    const postId = parseInt(req.params.id);
-    const objectIds = req.body.objects;
-    const suggestedById = req.body.suggestedById;
-    // Créez la suggestion
-    const addSuggest = await addSuggestionToPostService (postId,objectIds,suggestedById);
-    return res.status(200).json(addSuggest);
-  } catch (error:any) {
-    console.error('Error adding suggestion to post:', error.message);
-    throw error;
-  }
-};
-
-export const  getSuggestions = async (req: Request, res: Response) =>  {
-  const postId = parseInt(req.params.id, 10);
-
-  if (isNaN(postId)) {
-    return res.status(400).json({ error: 'Invalid post ID' });
-  }
-
-  try {
-    const suggestions = await getPostSuggestions(postId);
-    res.json(suggestions);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch suggestions' });
-  }
-}

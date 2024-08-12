@@ -213,7 +213,7 @@ export const updateObject = async (
     categoryId?: number;
     description?: string;
     ownerId?: number;
-    photos : string[];
+    photos? : string[];
   }
 ) => {
   return prisma.object.update({

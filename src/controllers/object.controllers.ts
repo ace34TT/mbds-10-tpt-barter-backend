@@ -252,7 +252,24 @@ export const updateObjectHandler = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Failed to update object" });
   }
 };
-
+/*
+export const updateObjectOwnerHandler = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { ownerId } = req.body;
+  console.log(req.body);
+  try {
+    const existingObject = await getObjectById(Number(id));
+    if (!existingObject) {
+      return res.status(404).json({ error: "Object not found" });
+    }
+    const updatedObject = await updateObject(Number(id), { ownerId: ownerId});
+    return res.status(200).json(updatedObject);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Failed to update object" });
+  }
+};
+*/
 export const getObjectByUserHandler = async (req: Request, res: Response) => {
   const { userId } = req.params;
   try {

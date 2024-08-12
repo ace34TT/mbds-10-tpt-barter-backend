@@ -18,6 +18,7 @@ router.post("/", createObjectValidationRules(),  upload.array('files', 10), crea
 router.delete("/:id", deleteObjectHandler);
 router.get("/user/:userId", getObjectByUserHandler);
 router.get("/allData/:id", getObjectByIdAllDataHandler);
+router.put("/owner/:id",updateObjectHandler);
 router.put("/:id",upload.array('files', 10), updateObjectWithPhoto);
 router.delete("/:id", deleteObjectHandler);
 router.delete("/status/:id", deleteObjectStatus);
