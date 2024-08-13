@@ -51,27 +51,26 @@ export const updateSuggestionStatusService = async (
         throw new Error("Suggestion not found");
       }
 
-      // Update the suggestion status to ACCEPTED
-      await prisma.suggestion.update({
+      const response = await prisma.suggestion.update({
         where: { id: suggestionId },
         data: { status },
       });
 
-      // Update the object owner to the user who made the suggestion
       if (status === "ACCEPTED") {
-        await prisma.object.update({
-          where: { id: suggestion.suggestedObject[0].objectId },
+        const objetId = suggestion.suggestedObject.map((suggestedObject) => suggestedObject.objectId);
+        await prisma.object.updateMany({
+          where: { id: {in : objetId} },
           data: { ownerId: suggestion.suggestedById },
         });
       }
+      
     });
 
     console.log("Suggestion accepted and object owner updated successfully");
+
   } catch (error) {
     console.error("Error accepting suggestion:", error);
-  } finally {
-    await prisma.$disconnect();
-  }
+  } 
 };
 
 export const getSuggestionsBySuggestedByIdAndStatus = async (authorId: number, page: number, limit: number, status?: SuggestionStatus) => {
@@ -97,7 +96,15 @@ export const getSuggestionsBySuggestedByIdAndStatus = async (authorId: number, p
             suggestion: true,
           },
         },
-        post: true,        
+        post: {
+          include: {
+            objects: {
+              include: {
+                object: true
+              }
+            }
+          }
+        },        
         suggestedBy: true,
       },
       orderBy: {
