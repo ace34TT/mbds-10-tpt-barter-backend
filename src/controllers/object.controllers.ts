@@ -31,11 +31,12 @@ export const getObjectsPaginHandler = async (req: Request, res: Response) => {
     if(page == 0) {
       page = 1;
     }
+    const ownerId = parseInt(req.query.ownerId as string, 10) ;
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
 
     console.log(req.query);
     
-    const result = await getObjectsPagin(page, limit);
+    const result = await getObjectsPagin(page, limit,ownerId);
 
     return res.status(200).json(result);
   } catch ( err: any) {
@@ -201,10 +202,9 @@ export const createObjectHandler = async (req: Request, res: Response) => {
 
     // const fileIds = await uploadFileToDrive(files);
     const reqfiles = req as MulterRequestWithFiles;
-    console.log(reqfiles);
+    console.log(reqfiles.files);
 
-    console.log(req.body);
-
+  
     if (!reqfiles || reqfiles.files.length === 0) {
       return res.status(400).json({ error: 'No files uploaded' });
     }
@@ -238,8 +238,9 @@ export const createObjectHandler = async (req: Request, res: Response) => {
 
 export const updateObjectHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, categoryId, description, ownerId,photos } = req.body;
   console.log(req.body);
+  console.log(id);
+  const { name, categoryId, description, ownerId,photos } = req.body;
   try {
     const existingObject = await getObjectById(Number(id));
     if (!existingObject) {

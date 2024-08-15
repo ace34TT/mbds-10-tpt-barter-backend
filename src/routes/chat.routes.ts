@@ -7,7 +7,7 @@ import {
   getChatByParticipantsHandler,
   getChatsByUserHandler,
 } from "../controllers/chat.controllers";
-import { getChatByUserService } from "../services/chat.services";
+import { getChatByUserService } from "../services/chat.services"; 
 
 const router = express.Router();
 

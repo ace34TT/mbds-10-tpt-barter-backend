@@ -14,6 +14,7 @@ import { IMessage } from "../shared/interfaces/mongoModels.interfaces";
 export const createChatHandler = async (req: Request, res: Response) => {
   try {
     const { sender, receiver, messages } = req.body;
+    console.log(req.body);
     const convertedMessages = messages.map((message: IMessage) => ({
       ...message,
       timestamp: new Date(message.timestamp), // Convert string to Date object
@@ -43,9 +44,10 @@ export const continueChatHandler = async (req: Request, res: Response) => {
   try {
     const chatId = req.params.id;
     const message = req.body;
+    console.log(message);
     message.timestamp = new Date(message.timestamp);
     messageSchema.parse(message);
-    console.log(message);
+ 
     if (!chatId || !message) {
       return res.status(400).json({ message: "Invalid chat id or message" });
     }
