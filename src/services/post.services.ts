@@ -106,7 +106,7 @@ export const createPostService = async (post: IPost) => {
       },
     });
     return _post;
-  } catch (error:any) {
+  } catch (error: any) {
     console.log(error.message);
     throw error;
   }
@@ -154,7 +154,7 @@ export const getUserPostService = async (authorId: number, page: number, limit: 
     const posts = await prisma.post.findMany({
       skip: startIndex,
       take: limit,
-      where: { authorId: authorId },
+      where: { authorId: authorId, deletedAt: null },
       include: {
         objects: {
           include: {
@@ -241,7 +241,7 @@ export const getActivePostService = async (page: number, limit: number, userId: 
       hasNextPage,
       hasPrevPage,
     };
-  } catch (error) { 
+  } catch (error) {
     throw error;
   }
 };
