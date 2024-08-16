@@ -8,6 +8,7 @@ export const getObjectsHandler = async (req: Request, res: Response) => {
     const objects = await getObjects();
     return res.status(200).json(objects);
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ error: "Failed to retrieve objects" });
   }
 };
@@ -66,13 +67,30 @@ export const createObjectHandler = async (req: Request, res: Response) => {
 export const updateObjectHandler = async (req: Request, res: Response) => {
 
   const { id } = req.params;
-  const { name, categoryId, description, ownerId } = req.body;
+  const { name, categoryId, description, ownerId, photosToRemove } = req.body;
+  const files: Express.Multer.File[] = req.files as Express.Multer.File[];
+  
   try {
     const existingObject = await getObjectById(Number(id));
     if (!existingObject) {
       return res.status(404).json({ error: "Object not found" });
     }
-    const updatedObject = await updateObject(Number(id), { name: name, categoryId: categoryId, description: description, ownerId: ownerId });
+
+    // Upload new files if any
+    let newFileIds: string[] = [];
+    if (files && files.length > 0) {
+      newFileIds = await uploadFileToDrive(files);
+    }
+
+     // Merge existing photos with new ones
+    let updatedPhotos = existingObject.photos;
+    if (photosToRemove && photosToRemove.length > 0) {
+      updatedPhotos = updatedPhotos.filter(photo => !photosToRemove.includes(photo));
+      // Optionally delete these photos from Google Drive if necessary
+    }
+    updatedPhotos = updatedPhotos.concat(newFileIds);
+
+    const updatedObject = await updateObject(Number(id), { name: name, categoryId: categoryId, description: description, ownerId: ownerId, photos: updatedPhotos  });
     return res.status(200).json(updatedObject);
   } catch (error) {
     console.log(error)
