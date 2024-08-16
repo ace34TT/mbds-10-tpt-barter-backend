@@ -1,8 +1,10 @@
 import express from "express";
-import { getCountInsights } from "../controllers/dashboard.controllers";
+import { getCountInsightsHandler, get14DaysExchangesHandler, get14DaysDeclinedExchangesHandler } from "../controllers/dashboard.controllers";
 
 const router = express.Router();
 
-router.get("/count-insights", getCountInsights);
+router.get("/count-insights", getCountInsightsHandler);
+router.get("/14-days-reports", get14DaysExchangesHandler);
+router.get("/14-days-declined-reports", get14DaysDeclinedExchangesHandler);
 
 export { router as DashboardRoutes };
