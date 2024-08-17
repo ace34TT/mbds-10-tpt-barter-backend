@@ -3,7 +3,7 @@ import {
   continueChatService,
   createChatService,
   deleteChatByIdService,
-  findChatByParticipantsService,
+  findChatByParticipantsService, getChatByIdService,
   getChatByUserService,
 } from "../services/chat.services";
 import { chatSchema, messageSchema } from "../shared/schemas/chat.schema";
@@ -90,7 +90,7 @@ export const getChatByIdHandler = async (req: Request, res: Response) => {
     if (!chatId) {
       return res.status(400).json({ message: "Invalid chat id" });
     }
-    const chat = await getChatByUserService(chatId);
+    const chat = await getChatByIdService(chatId);
     return res.status(200).json(chat);
   } catch (error: any) {
     if (error.message.includes("not found")) {
@@ -104,11 +104,12 @@ export const getChatByIdHandler = async (req: Request, res: Response) => {
 };
 export const getChatsByUserHandler = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
     if (!userId) {
       return res.status(400).json({ message: "Invalid user id" });
     }
     const chats = await getChatByUserService(userId);
+    console.log(chats)
     return res.status(200).json(chats);
   } catch (error: any) {
     if (error.message.includes("not found")) {
