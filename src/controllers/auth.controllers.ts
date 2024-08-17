@@ -14,7 +14,10 @@ require("dotenv").config();
 export const AuthController = {
   register: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      userSchema.parse(req.body);
+      console.log("calling register function");
+      // userSchema.parse(req.body);
+      console.log("after parse");
+
       const { name, email, username, password, roleId } = req.body;
       const existingUser = await prisma.user.findUnique({
         where: { email },
