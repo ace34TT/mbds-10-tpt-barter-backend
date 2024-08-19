@@ -3,6 +3,7 @@ import { z } from "zod";
 export const messageSchema = z.object({
   author: z.string(),
   text: z.string(),
+  deliveryStatus: z.enum(['sent', 'delivered', 'read']).default('sent'),
   timestamp: z.date().default(() => new Date()),
 });
 

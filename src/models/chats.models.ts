@@ -4,6 +4,11 @@ const { Schema } = mongoose;
 const MessageSchema = new Schema({
   author: { type: String },
   text: { type: String },
+  deliveryStatus: {
+    type: String,
+    enum: ['sent', 'delivered', 'read'],
+    default: 'sent'
+  },
   timestamp: { type: Date, default: Date.now },
 });
 

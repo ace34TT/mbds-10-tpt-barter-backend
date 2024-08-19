@@ -1,4 +1,7 @@
 export interface IMessage {
+  // for socket purposes
+    clientId : string ;
+  //
   author: string;
   text: string;
   timestamp: Date;
