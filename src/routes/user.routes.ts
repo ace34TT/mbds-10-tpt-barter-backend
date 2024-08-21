@@ -10,5 +10,6 @@ router.get('/', getUsers);
 router.get('/:id', getUserById);
 router.put('/:id', updateUser);
 router.delete('/:id', deleteUser);
+router.patch('/player/:userId', setUserPlayerIdHandler);
 
 export { router as UserRoutes };

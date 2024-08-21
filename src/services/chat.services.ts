@@ -1,5 +1,5 @@
-import { Chat } from "./../models/chats.models";
-import { IChat, IMessage } from "../shared/interfaces/mongoModels.interfaces";
+import {Chat} from "./../models/chats.models";
+import {IChat, IMessage} from "../shared/interfaces/mongoModels.interfaces";
 
 export const createChatService = async (chat: IChat) => {
   try {
@@ -28,19 +28,35 @@ export const continueChatService = (chatId: string, message: IMessage) => {
     throw new Error(error);
   }
 };
-export const getChatByUserService = (userId: string) => {
+export const getChatByUserService = async (userId: string) => {
   try {
-    const chats = Chat.find({ "sender.id": userId }).exec();
-    return chats;
+    return await Chat.aggregate([
+      {
+        $match: {
+          $or: [
+            { "sender.id": userId },
+            { "receiver.id": userId },
+          ],
+        },
+      },
+      {
+        $project: {
+          sender: 1,
+          receiver: 1,
+          latestMessage: { $arrayElemAt: ["$messages", -1] }, // Get the last message from the messages array
+        },
+      },
+    ]).exec();
   } catch (error: any) {
-    console.log(error.message);
-    throw new Error(error);
+    throw new Error(error.message || error);
   }
 };
-export const getChatByIdService = (chatId: string) => {
+
+
+export const getChatByIdService = async (chatId: string) => {
   try {
-    const chat = Chat.findById(chatId).exec();
-    return chat;
+    console.log("finding chat with " , chatId)
+    return await Chat.findById(chatId).exec();
   } catch (error: any) {
     throw new Error(error);
   }
