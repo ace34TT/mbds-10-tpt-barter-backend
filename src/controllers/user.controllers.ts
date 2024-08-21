@@ -27,7 +27,7 @@ export const setUserPlayerIdHandler = async (req: Request, res: Response) => {
     console.log("setting userId and playerId" , userId, playerId);
     if (!userId ||!playerId) {return res.status(400).json({ error: 'Veuillez fournir'})}
     const user = await prisma.user.update({
-      data: {playerId},
+      data: {playerId: playerId},
       where: {id: Number(userId)},
     });
     res.json(user);

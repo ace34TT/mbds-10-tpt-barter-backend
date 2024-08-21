@@ -3,7 +3,7 @@ import {
   continueChatService,
   createChatService,
   deleteChatByIdService,
-  findChatByParticipantsService, getChatByIdService,
+  findChatByParticipantsService,
   getChatByUserService,
   getChatByIdService
 } from "../services/chat.services";
