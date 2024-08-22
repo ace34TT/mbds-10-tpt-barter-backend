@@ -68,7 +68,7 @@ export const AuthController = {
         return;
       }
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
+        { userId: user.id, email: user.email, username: user.username  },
         process.env.JWT_SECRET as string,
         { expiresIn: "1h" }
       );
@@ -110,7 +110,7 @@ export const login = async (req: Request, res: Response) => {
 
     // Créer un token JWT
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, username: user.username },
       process.env.JWT_SECRET as string,
       { expiresIn: '1h' }
     );

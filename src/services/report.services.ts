@@ -1,9 +1,9 @@
 import { IObjetReport, IReport, IUserReport, Report } from "../models/report.models";
 
-export const addUserReport = async (usermakereport: IUserReport, userReport: IUserReport, motif: string): Promise<IReport> => {
+export const addUserReport = async (userMakeReport: IUserReport, userReport: IUserReport, motif: string): Promise<IReport> => {
     try {
         const newReport = new Report({
-            usermakereport,
+            userMakeReport,
             userReport,
             motif,
             dateCreation: new Date(),
@@ -15,10 +15,10 @@ export const addUserReport = async (usermakereport: IUserReport, userReport: IUs
     }
 };
 
-export const addPostReport = async (usermakereport: IUserReport, objetReport: IObjetReport, motif: string): Promise<IReport> => {
+export const addPostReport = async (userMakeReport: IUserReport, objetReport: IObjetReport, motif: string): Promise<IReport> => {
     try {
         const newReport = new Report({
-            usermakereport,
+            userMakeReport,
             objetReport,
             motif,
             dateCreation: new Date(),
