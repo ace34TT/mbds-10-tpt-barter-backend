@@ -59,6 +59,9 @@ export interface IPost {
   objectIds: number[];
   suggestions?: ISuggestion[]; // Direct relation to Suggestion
   suggestionIds: number[];
+  latitude?: number;
+  longitude?: number;
+  address?: string;
   deletedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;

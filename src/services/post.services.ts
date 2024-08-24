@@ -98,6 +98,9 @@ export const createPostService = async (post: IPost) => {
       data: {
         author: { connect: { id: post.authorId } },
         description: post.description,
+        latitude: post.latitude,
+        longitude: post.longitude,
+        address: post.address,
         objects: {
           create: post.objectIds.map((objectId) => ({
             object: { connect: { id: objectId } },
