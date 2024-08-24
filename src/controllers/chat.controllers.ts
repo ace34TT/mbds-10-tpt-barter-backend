@@ -6,6 +6,7 @@ import {
   findChatByParticipantsService,
   getChatByUserService,
   getChatByIdService,
+  getChatByUserServiceHandler
 } from "../services/chat.services";
 import { chatSchema, messageSchema } from "../shared/schemas/chat.schema";
 import { z } from "zod";
@@ -90,7 +91,7 @@ export const continueChatHandler = async (req: Request, res: Response) => {
     firebaseAdmin
       .messaging()
       .send(notificationData)
-      .then((response: any) => {
+      .then((response) => {
         console.log("notification send");
         console.log(response);
       })
@@ -175,6 +176,26 @@ export const getChatsByUserHandler = async (req: Request, res: Response) => {
 
     const chats = await getChatByUserService(userId);
     console.log(chats);
+    return res.status(200).json(chats);
+  } catch (error: any) {
+    console.log(error);
+    if (error.message.includes("not found")) {
+      res.status(404).json({ message: error.message });
+    } else {
+      res
+        .status(500)
+        .json({ message: "An error occurred while getting the chats" });
+    }
+  }
+};
+
+export const getChatsByUserIdHandler = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid user id" });
+    }
+    const chats = await getChatByUserServiceHandler(userId);
     return res.status(200).json(chats);
   } catch (error: any) {
     console.log(error);

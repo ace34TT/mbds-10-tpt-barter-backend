@@ -49,6 +49,23 @@ export const getChatByUserService = async (userId: string) => {
   }
 };
 
+export const getChatByUserServiceHandler = (userId: string) => {
+  try {
+    const chats = Chat.find({
+      $or: [
+        { "sender.id": userId },
+        { "receiver.id": userId }  // Ajouter une autre condition ici
+      ]
+    }).exec();
+    return chats;
+  } catch (error: any) {
+    console.log(error.message);
+    throw new Error(error);
+  }
+};
+
+
+
 export const getChatByIdService = async (chatId: string) => {
   try {
     console.log("finding chat with ", chatId);
