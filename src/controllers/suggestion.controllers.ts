@@ -1,11 +1,14 @@
 import { suggestionSchema } from "./../shared/schemas/suggestion.schema";
 import { Request, Response } from "express";
 import {
+  getAllSuggestionsByStatus,
+  getSuggestionsBySuggestedByIdAndStatus,
   sendSuggestionService,
   updateSuggestionStatusService,
   addSuggestionToPostService,
-  getPostSuggestions
+  getPostSuggestions,
 } from "../services/suggestion.services";
+import { SuggestionStatus } from "@prisma/client";
 
 export const sendSuggestionHandler = async (req: Request, res: Response) => {
   try {
@@ -48,34 +51,55 @@ export const updateSuggestionStatusHandler = async (
   }
 };
 
-
-export const addSuggestionToPost = async (req: Request, res: Response) => {
+export const getSuggestionsHandler = async (req: Request, res: Response) => {
   try {
-    const postId = parseInt(req.params.id);
-    const objectIds = req.body.objects;
-    const suggestedById = req.body.suggestedById;
-    // Créez la suggestion
-    const addSuggest = await addSuggestionToPostService (postId,objectIds,suggestedById);
-    return res.status(200).json(addSuggest);
-  } catch (error:any) {
-    console.error('Error adding suggestion to post:', error.message);
-    throw error;
+    const { id } = req.params;
+    const { status } = req.query;
+    let page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    if (page == 0) {
+      page = 1;
+    }
+    const limit = req.query.limit
+      ? parseInt(req.query.limit as string, 10)
+      : 10;
+
+    const suggestions = await getSuggestionsBySuggestedByIdAndStatus(
+      parseInt(id),
+      page,
+      limit,
+      status as SuggestionStatus
+    );
+
+    res.status(200).send(suggestions);
+  } catch (error) {
+    return res.status(500).send({
+      message: "Error fetching suggestions",
+      error: String(error),
+    });
   }
 };
 
-export const  getSuggestions = async (req: Request, res: Response) =>  {
-  const postId = parseInt(req.params.id, 10);
-
-  if (isNaN(postId)) {
-    return res.status(400).json({ error: 'Invalid post ID' });
-  }
-
+export const getAllSuggestionsHandler = async (req: Request, res: Response) => {
   try {
-    const suggestions = await getPostSuggestions(postId);
-    res.json({data:suggestions});
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch suggestions' });
-  }
-}
+    const { status } = req.query;
+    let page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    if (page == 0) {
+      page = 1;
+    }
+    const limit = req.query.limit
+      ? parseInt(req.query.limit as string, 10)
+      : 10;
+    const suggestions = await getAllSuggestionsByStatus(
+      page,
+      limit,
+      status as SuggestionStatus
+    );
 
+    res.status(200).send(suggestions);
+  } catch (error) {
+    return res.status(500).send({
+      message: "Error fetching suggestions",
+      error: String(error),
+    });
+  }
+};

@@ -1,22 +1,19 @@
 import { body, query } from 'express-validator';
 
 export const userReportValidation = [
-    body('usermakereport.id').isInt().withMessage('User maker report ID must be an integer'),
-    body('usermakereport.username').isString().withMessage('User maker report username must be a string'),
-    body('usermakereport.adresse').isString().withMessage('User maker report adresse must be a string'),
-    body('usermakereport.email').isEmail().withMessage('User maker report email must be a valid email'),
+    body('userMakeReport.id').isInt().withMessage('User maker report ID must be an integer'),
+    body('userMakeReport.username').isString().withMessage('User maker report username must be a string'),
+    body('userMakeReport.email').isEmail().withMessage('User maker report email must be a valid email'),
     body('userReport.id').optional().isInt().withMessage('User report ID must be an integer'),
     body('userReport.username').optional().isString().withMessage('User report username must be a string'),
-    body('userReport.adresse').optional().isString().withMessage('User report adresse must be a string'),
     body('userReport.email').optional().isEmail().withMessage('User report email must be a valid email'),
     body('motif').isString().withMessage('Motif must be a string'),
 ];
 
 export const postReportValidation = [
-    body('usermakereport.id').isInt().withMessage('User maker report ID must be an integer'),
-    body('usermakereport.username').isString().withMessage('User maker report username must be a string'),
-    body('usermakereport.adresse').isString().withMessage('User maker report adresse must be a string'),
-    body('usermakereport.email').isEmail().withMessage('User maker report email must be a valid email'),
+    body('userMakeReport.id').isInt().withMessage('User maker report ID must be an integer'),
+    body('userMakeReport.username').isString().withMessage('User maker report username must be a string'),
+    body('userMakeReport.email').isEmail().withMessage('User maker report email must be a valid email'),
     body('objetReport.id').isInt().withMessage('Object report ID must be an integer'),
     body('objetReport.nom').isString().withMessage('Object report name must be a string'),
     body('objetReport.proprietaireId').isInt().withMessage('Object report owner ID must be an integer'),

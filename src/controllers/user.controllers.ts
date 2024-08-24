@@ -21,6 +21,22 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
+export const setUserPlayerIdHandler = async (req: Request, res: Response) => {
+  try {
+    const { userId, playerId } = req.body;
+    console.log("setting userId and playerId" , userId, playerId);
+    if (!userId ||!playerId) {return res.status(400).json({ error: 'Veuillez fournir'})}
+    const user = await prisma.user.update({
+      data: {playerId: playerId},
+      where: {id: Number(userId)},
+    });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur lors de la mise à jour du joueur' });
+  }
+}
+
+
 // Obtenir tous les utilisateurs
 export const getUsers = async (req: Request, res: Response) => {
   try {

@@ -10,6 +10,8 @@ import {
 import { chatSchema, messageSchema } from "../shared/schemas/chat.schema";
 import { z } from "zod";
 import { IMessage } from "../shared/interfaces/mongoModels.interfaces";
+import { socketManager } from "../configs/socket.configs";
+import { Chat } from "../models/chats.models";
 
 export const createChatHandler = async (req: Request, res: Response) => {
   try {
@@ -30,7 +32,7 @@ export const createChatHandler = async (req: Request, res: Response) => {
       message: "Chats get is working",
       chat,
     });
-  } catch (error : any) {
+  } catch (error: any) {
     console.log(error.message);
     if (error instanceof z.ZodError) {
       res.status(400).json({
@@ -51,7 +53,26 @@ export const continueChatHandler = async (req: Request, res: Response) => {
     if (!chatId || !message) {
       return res.status(400).json({ message: "Invalid chat id or message" });
     }
-    const updatedChat = await continueChatService(chatId, message);
+    const updatedChat = await continueChatService(chatId, message).exec();
+    const chat = await Chat.findById(chatId).exec();
+    // send realtime answer to the participants
+    // Check if recipient is online using their database ID
+    console.log(socketManager.getUsers())
+    console.log("user", message.author)
+    const author: "sender" | "receiver" = message.author === "sender" ? "receiver" : "sender";
+    console.log(chat?.[author]!.id);
+    const recipientSocketId = socketManager.getUsers().get(chat?.[author]!.id!.toString()!);
+    // log reciprocation id
+    console.log("recipient socket id is : ", recipientSocketId)
+    if (recipientSocketId) {
+      socketManager.getIo().to(recipientSocketId).emit('new-message', {
+        chatId,
+        message,
+      });
+      message.deliveryStatus = 'delivered';
+    } else {
+      message.deliveryStatus = 'sent'; // User is offline
+    }
     return res
       .status(200)
       .json({ message: "Chat updated successfully", chat: updatedChat });
@@ -72,6 +93,8 @@ export const continueChatHandler = async (req: Request, res: Response) => {
     }
   }
 };
+
+
 export const deleteChatHandler = async (req: Request, res: Response) => {
   try {
     const chatId = req.params.id;
@@ -113,10 +136,19 @@ export const getChatByIdHandler = async (req: Request, res: Response) => {
 export const getChatsByUserHandler = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
+    console.log("User id " + userId);
+
     if (!userId) {
       return res.status(400).json({ message: "Invalid user id" });
     }
+
+    Chat.aggregate([
+      { $match: { $or: [{ "sender.id": userId }, { "receiver.id": userId }] } }
+    ]).then(console.log).catch(console.error)
+
+
     const chats = await getChatByUserService(userId);
+    console.log(chats)
     return res.status(200).json(chats);
   } catch (error: any) {
     console.log(error);
@@ -150,3 +182,4 @@ export const getChatByParticipantsHandler = async (
     return res.status(500).json(error);
   }
 };
+

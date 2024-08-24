@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IUserReport {
     id: number;
     username: string;
-    adresse: string;
+    adresse?: string;
     email?: string;
 }
 
@@ -15,7 +15,7 @@ export interface IObjetReport {
 }
 
 export interface IReport extends Document {
-    usermakereport: IUserReport;
+    userMakeReport: IUserReport;
     userReport: IUserReport;
     objetReport: IObjetReport;
     motif: string;
@@ -26,7 +26,7 @@ export interface IReport extends Document {
 const UserReportSchema: Schema = new Schema({
     id: { type: Number, required: true },
     username: { type: String, required: true },
-    adresse: { type: String, required: true },
+    adresse: { type: String, required: false },
     email: { type: String, sparse: true, match: /.+\@.+\..+/ }
 });
 
@@ -38,7 +38,7 @@ const ObjetReportSchema: Schema = new Schema({
 });
 
 const ReportSchema: Schema = new Schema({
-    usermakereport: { type: UserReportSchema, required: true },
+    userMakeReport: { type: UserReportSchema, required: true },
     userReport: { type: UserReportSchema },
     objetReport: { type: ObjetReportSchema },
     motif: { type: String, required: true },

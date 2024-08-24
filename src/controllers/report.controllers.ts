@@ -5,13 +5,14 @@ import mongoose from "mongoose";
 
 export const addUserReportHandler = async (req: Request, res: Response) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   try {
-    const { usermakereport, userReport, motif } = req.body;
-    const report = await reportService.addUserReport(usermakereport, userReport, motif);
+    const { userMakeReport, userReport, motif } = req.body;
+    const report = await reportService.addUserReport(userMakeReport, userReport, motif);
     res.status(201).json(report);
   } catch (error) {
     console.log(error);
@@ -24,10 +25,9 @@ export const addPostReportHandler = async (req: Request, res: Response) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-
   try {
-    const { usermakereport, objetReport, motif } = req.body;
-    const report = await reportService.addPostReport(usermakereport, objetReport, motif);
+    const { userMakeReport, objetReport, motif } = req.body;
+    const report = await reportService.addPostReport(userMakeReport, objetReport, motif);
     res.status(201).json(report);
   } catch (error) {
     res.status(500).json(error);

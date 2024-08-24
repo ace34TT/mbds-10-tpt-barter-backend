@@ -20,7 +20,6 @@ router.get("/", getActivePostsHandler);
 router.post("/", createPostHandler);
 router.delete("/:id", deletedPostHandler);
 router.put("/:id", updatePostHandler);
-router.get("/explore/:userId", getExploreItemsPostHandler);
 
 
 

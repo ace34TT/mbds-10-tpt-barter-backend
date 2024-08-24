@@ -30,6 +30,7 @@ model User {
   password   String
   role       Role         @relation(fields: [roleId], references: [id])
   roleId     Int
+  playerId   String?
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   Objects    Object[]
@@ -66,6 +67,9 @@ model Post {
   description String       @default("Pas de description")
   objects     ObjectPost[]
   suggestions Suggestion[]
+  latitude    Float?
+  longitude   Float?
+  address     String?
   deletedAt   DateTime?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
