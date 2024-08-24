@@ -28,7 +28,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/auth", AuthRoutes);
 app.use("/api/categories", Protect, CategoryRoutes);
 app.use("/api/chats", ChatRoutes);
-app.use("/api/notifications", Protect, NotificationRoutes);
+app.use("/api/notifications", NotificationRoutes);
 app.use("/api/objects", Protect, ObjectRoutes);
 app.use("/api/posts", PostRoutes);
 app.use("/api/reports", Protect, ReportRoutes);

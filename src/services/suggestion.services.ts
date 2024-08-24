@@ -73,3 +73,45 @@ export const updateSuggestionStatusService = async (
     await prisma.$disconnect();
   }
 };
+
+
+export const getSuggestionsByUserService = async (userId: string) => {
+  try {
+    return await prisma.suggestion.findMany({
+      where: {
+        post: {
+          authorId: parseInt(userId),
+        },
+      },
+      select: {
+        id: true,
+        post: true,
+
+        status: true,
+        createdAt: true,
+        suggestedBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        suggestedObject: {
+          select: {
+            id: true,
+            object: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                photos: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+  } catch (error) {
+    throw error;
+  }
+}

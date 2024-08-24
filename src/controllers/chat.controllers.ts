@@ -11,6 +11,7 @@ import {z} from "zod";
 import {IMessage} from "../shared/interfaces/mongoModels.interfaces";
 import {socketManager} from "../configs/socket.configs";
 import {Chat} from "../models/chats.models";
+import {firebaseAdmin} from "../configs/firebase.config";
 
 export const createChatHandler = async (req: Request, res: Response) => {
   try {
@@ -53,8 +54,8 @@ export const continueChatHandler = async (req: Request, res: Response) => {
     // send realtime answer to the participants
     // Check if recipient is online using their database ID
     console.log(socketManager.getUsers())
-    console.log("user" , message.author)
-    const author : "sender" | "receiver" = message.author ==="sender" ? "receiver" : "sender";
+    console.log("user", message.author)
+    const author: "sender" | "receiver" = message.author === "sender" ? "receiver" : "sender";
     console.log(chat?.[author]!.id);
     const recipientSocketId = socketManager.getUsers().get(chat?.[author]!.id!.toString()!);
     // log reciprocation id
@@ -68,10 +69,28 @@ export const continueChatHandler = async (req: Request, res: Response) => {
     } else {
       message.deliveryStatus = 'sent'; // User is offline
     }
+    const notificationData = {
+      notification: {
+        title: "Hello",
+        body: "this is a notification test"
+      },
+      data: {},
+      token: "cy0OUIjrSvehnJjIYNwW76:APA91bGBq5aqNBwFy3ntcNEqRXaoqGHRpbrG8Kwwshg3_qlCRFjgLCD4u04SJAvwTJejQFQEGEb_MUhSnY3gSmsDa26xSnYpXYG6zdN1CpaGB5auy-IItqKpQGIeWEQedDBd31lM3Lb8"
+    };
+
+    firebaseAdmin.messaging().send(notificationData).then((response) => {
+      console.log("notification send")
+      console.log(response)
+    }).catch((error: any) => {
+      console.log(error)
+    });
+
+
     return res
         .status(200)
         .json({message: "Chat updated successfully", chat: updatedChat});
   } catch (error: any) {
+    console.log(error)
     if (error instanceof z.ZodError) {
       res.status(400).json({
         message: "Validation failed",

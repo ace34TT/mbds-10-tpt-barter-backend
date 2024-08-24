@@ -3,6 +3,19 @@ import * as notificationService from '../services/notification.services';
 import mongoose from "mongoose";
 import { validationResult } from "express-validator";
 
+export const registerDeviceHandler = async (req: Request, res: Response) => {
+  try {
+    const {token, userId} = req.body;
+    // Here you would typically store the token in your database
+    // associated with the userId
+    console.log(`Registering device token ${token} for user ${userId}`);
+    res.status(200).json({message: 'Device registered successfully'});
+  } catch (error) {
+    console.error('Error registering device:', error);
+    res.status(500).json({error: 'Failed to register device'});
+  }
+};
+
 export const getNotificationsHandler = async (req: Request, res: Response) => {
   try {
     const notifications = await notificationService.getNotifications();
