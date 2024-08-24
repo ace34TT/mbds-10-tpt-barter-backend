@@ -98,12 +98,19 @@ export const deleteCategoryHandler = async (req: Request, res: Response) => {
 
 // ADMIN
 export const getCategoriesAdminHandler = async (req: Request, res: Response) => {
-  
   try{
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    const categories = await getCategoriesWithPagination(page, limit);
-    const totalCategories = await prisma.category.count();
+    const title = req.query.title as string || undefined;
+    const categories = await getCategoriesWithPagination(page, limit, title);
+    const totalCategories = await prisma.category.count({
+      where: {
+        title: title ? {
+          contains: title,
+          mode: 'insensitive', // Optionnel, pour rendre la recherche insensible à la casse
+        } : undefined,
+      },
+    });
     return res.status(200).json({
       data: categories,
       meta: {

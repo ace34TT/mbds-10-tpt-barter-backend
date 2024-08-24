@@ -75,6 +75,7 @@ export const updateUser = async (req: Request, res: Response) => {
     });
     res.json({message:"mis à jour effectué" ,user});
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error});
   }
 };
@@ -99,8 +100,22 @@ export const getUsersAdminHandler = async (req: Request, res: Response) => {
   try{
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    const users = await getUsersWithPagination(page, limit);
-    const totalUsers = await prisma.user.count();
+    const email = req.query.email as string || undefined;
+    const roleId = parseInt(req.query.roleId as string) || undefined;
+
+    const users = await getUsersWithPagination(page, limit, email, roleId);
+    const totalUsers = await prisma.user.count({
+      where: {
+        ...(email && {
+          OR: [
+            { email: { contains: email, mode: 'insensitive' } },
+            { name: { contains: email, mode: 'insensitive' } },
+            { username: { contains: email, mode: 'insensitive' } },
+          ],
+        }),
+        ...(roleId && { roleId: roleId }), // Add roleId filter
+      },
+    });
     return res.status(200).json({
       data: users,
       meta: {
