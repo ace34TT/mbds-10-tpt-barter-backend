@@ -58,23 +58,28 @@ export const updateSuggestionStatusService = async (
       });
 
       if (status === "ACCEPTED") {
-        const objetId = suggestion.suggestedObject.map((suggestedObject) => suggestedObject.objectId);
+        const objetId = suggestion.suggestedObject.map(
+          (suggestedObject) => suggestedObject.objectId
+        );
         await prisma.object.updateMany({
-          where: { id: {in : objetId} },
+          where: { id: { in: objetId } },
           data: { ownerId: suggestion.suggestedById },
         });
       }
-      
     });
 
     console.log("Suggestion accepted and object owner updated successfully");
-
   } catch (error) {
     console.error("Error accepting suggestion:", error);
-  } 
+  }
 };
 
-export const getSuggestionsBySuggestedByIdAndStatus = async (authorId: number, page: number, limit: number, status?: SuggestionStatus) => {
+export const getSuggestionsBySuggestedByIdAndStatus = async (
+  authorId: number,
+  page: number,
+  limit: number,
+  status?: SuggestionStatus
+) => {
   try {
     const startIndex = (page - 1) * limit;
     const totalDocs = await prisma.suggestion.count();
@@ -85,7 +90,7 @@ export const getSuggestionsBySuggestedByIdAndStatus = async (authorId: number, p
       take: limit,
       where: {
         post: {
-          authorId: authorId, 
+          authorId: authorId,
         },
         ...(status && { status: status }),
         deletedAt: null,
@@ -101,16 +106,16 @@ export const getSuggestionsBySuggestedByIdAndStatus = async (authorId: number, p
           include: {
             objects: {
               include: {
-                object: true
-              }
-            }
-          }
-        },        
+                object: true,
+              },
+            },
+          },
+        },
         suggestedBy: true,
       },
       orderBy: {
-        createdAt: 'desc',
-      }
+        createdAt: "desc",
+      },
     });
 
     const nextPage = page < totalPages ? page + 1 : null;
@@ -129,12 +134,16 @@ export const getSuggestionsBySuggestedByIdAndStatus = async (authorId: number, p
       hasPrevPage,
     };
   } catch (error) {
-    console.error('Error fetching suggestions:', error);
+    console.error("Error fetching suggestions:", error);
     throw error;
   }
 };
 
-export const getAllSuggestionsByStatus = async (page: number, limit: number, status?: SuggestionStatus) => {
+export const getAllSuggestionsByStatus = async (
+  page: number,
+  limit: number,
+  status?: SuggestionStatus
+) => {
   try {
     const startIndex = (page - 1) * limit;
     const totalDocs = await prisma.suggestion.count();
@@ -152,7 +161,7 @@ export const getAllSuggestionsByStatus = async (page: number, limit: number, sta
             suggestion: true,
           },
         },
-        post: true,        
+        post: true,
         suggestedBy: true,
       },
     });
@@ -173,26 +182,28 @@ export const getAllSuggestionsByStatus = async (page: number, limit: number, sta
       hasPrevPage,
     };
   } catch (error) {
-    console.error('Error fetching suggestions:', error);
+    console.error("Error fetching suggestions:", error);
     throw error;
   }
 };
 
-
-
-export const addSuggestionToPostService = async (postId:number , objectIds:number[], suggestedById:number) => {
+export const addSuggestionToPostService = async (
+  postId: number,
+  objectIds: number[],
+  suggestedById: number
+) => {
   const suggestion = await prisma.suggestion.create({
     data: {
       post: {
         connect: { id: postId },
       },
-      status: 'PENDING', // ou un autre statut par défaut
+      status: "PENDING", // ou un autre statut par défaut
       suggestedBy: { connect: { id: suggestedById } },
     },
   });
 
   // Créez les enregistrements ObjectSuggestion
-  const objectSuggestions = objectIds.map(objectId => ({
+  const objectSuggestions = objectIds.map((objectId) => ({
     objectId,
     suggestionId: suggestion.id,
   }));
@@ -200,9 +211,9 @@ export const addSuggestionToPostService = async (postId:number , objectIds:numbe
   await prisma.objectSuggestion.createMany({
     data: objectSuggestions,
   });
-}
+};
 
-export const getPostSuggestions = async (postId: number) =>{
+export const getPostSuggestions = async (postId: number) => {
   try {
     const postWithSuggestions = await prisma.post.findUnique({
       where: { id: postId },
@@ -225,8 +236,50 @@ export const getPostSuggestions = async (postId: number) =>{
     }
 
     return postWithSuggestions.suggestions;
-  } catch (error:any) {
-    console.error(`Error fetching suggestions for post ${postId}: ${error.message}`);
-    throw new Error('An error occurred while fetching suggestions.');
+  } catch (error: any) {
+    console.error(
+      `Error fetching suggestions for post ${postId}: ${error.message}`
+    );
+    throw new Error("An error occurred while fetching suggestions.");
   }
-}
+};
+
+export const getSuggestionsByUserService = async (userId: string) => {
+  try {
+    return await prisma.suggestion.findMany({
+      where: {
+        post: {
+          authorId: parseInt(userId),
+        },
+      },
+      select: {
+        id: true,
+        post: true,
+
+        status: true,
+        createdAt: true,
+        suggestedBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        suggestedObject: {
+          select: {
+            id: true,
+            object: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                photos: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};

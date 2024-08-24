@@ -1,6 +1,7 @@
 import { suggestionSchema } from "./../shared/schemas/suggestion.schema";
 import { Request, Response } from "express";
 import {
+  getSuggestionsByUserService,
   getAllSuggestionsByStatus,
   getSuggestionsBySuggestedByIdAndStatus,
   sendSuggestionService,
@@ -99,6 +100,24 @@ export const getAllSuggestionsHandler = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(500).send({
       message: "Error fetching suggestions",
+      error: String(error),
+    });
+  }
+};
+
+export const getSuggestionByUserHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { userId } = req.params;
+    if (!userId) return res.status(400).json({ message: "Invalid user id" });
+    const suggestions = await getSuggestionsByUserService(userId);
+    console.log(suggestions);
+    res.status(200).send(suggestions);
+  } catch (error) {
+    return res.send({
+      message: "Error getting suggestion by user",
       error: String(error),
     });
   }

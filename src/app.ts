@@ -18,13 +18,13 @@ import { RoleRoutes } from "./routes/role.routes";
 const app = express();
 
 const corsOptions = {
-  origin:['http://localhost:4200'],
-  optionsSuccessStatus: 200
-}
+  origin: ["http://localhost:4200"],
+  optionsSuccessStatus: 200,
+};
 
 app.use(cors(corsOptions));
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -39,7 +39,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-
 // !
 app.get("/", (req: Request, res: Response) => {
   return res.json({
@@ -49,14 +48,14 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/auth", AuthRoutes);
 app.use("/api/categories", Protect, CategoryRoutes);
-app.use("/api/chats", Protect,ChatRoutes);
-app.use("/api/notifications", Protect, NotificationRoutes);
+app.use("/api/chats", Protect, ChatRoutes);
+app.use("/api/notifications", NotificationRoutes);
 app.use("/api/objects", Protect, ObjectRoutes);
-app.use("/api/posts",Protect, PostRoutes);
+app.use("/api/posts", Protect, PostRoutes);
 app.use("/api/reports", Protect, ReportRoutes);
 app.use("/api/users", Protect, UserRoutes);
 app.use("/api/suggestions", SuggestionRoutes);
-app.use("/api/dashboard",Protect, DashboardRoutes);
+app.use("/api/dashboard", Protect, DashboardRoutes);
 app.use("/api/roles", Protect, RoleRoutes);
 
 app.use(async (err: Error, req: Request, res: Response, next: NextFunction) => {
