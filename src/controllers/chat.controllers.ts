@@ -90,7 +90,7 @@ export const continueChatHandler = async (req: Request, res: Response) => {
     firebaseAdmin
       .messaging()
       .send(notificationData)
-      .then((response) => {
+      .then((response: any) => {
         console.log("notification send");
         console.log(response);
       })

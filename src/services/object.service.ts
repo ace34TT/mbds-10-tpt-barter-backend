@@ -130,10 +130,10 @@ export const getObjectByOwnerList = async (id: number) => {
   }
 };
 
-export const getObjectsPagin = async (page: number, limit: number) => {
+
+export const getObjectsPagin = async (page: number, limit: number, ownerId:number) => {
   try {
     const startIndex = (page - 1) * limit;
-    console.log(startIndex);
 
     const totalDocs = await prisma.object.count();
     const totalPages = Math.ceil(totalDocs / limit);
@@ -147,6 +147,7 @@ export const getObjectsPagin = async (page: number, limit: number) => {
         posts: true,
         suggestions: true,
       },
+      where: { deletedAt: null,ownerId:ownerId },
       orderBy: {
         createdAt: "desc",
       },
