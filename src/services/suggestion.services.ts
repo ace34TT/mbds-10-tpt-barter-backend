@@ -3,6 +3,7 @@ import { Suggestion } from "../shared/schemas/suggestion.schema";
 import { SuggestionStatus } from "@prisma/client";
 
 export const sendSuggestionService = async (suggestion: Suggestion) => {
+  console.log(suggestion);
   try {
     const _suggestion = await prisma.suggestion.create({
       data: {
@@ -73,3 +74,56 @@ export const updateSuggestionStatusService = async (
     await prisma.$disconnect();
   }
 };
+
+
+
+export const addSuggestionToPostService = async (postId:number , objectIds:number[], suggestedById:number) => {
+  const suggestion = await prisma.suggestion.create({
+    data: {
+      post: {
+        connect: { id: postId },
+      },
+      status: 'PENDING', // ou un autre statut par défaut
+      suggestedBy: { connect: { id: suggestedById } },
+    },
+  });
+
+  // Créez les enregistrements ObjectSuggestion
+  const objectSuggestions = objectIds.map(objectId => ({
+    objectId,
+    suggestionId: suggestion.id,
+  }));
+
+  await prisma.objectSuggestion.createMany({
+    data: objectSuggestions,
+  });
+}
+
+export const getPostSuggestions = async (postId: number) =>{
+  try {
+    const postWithSuggestions = await prisma.post.findUnique({
+      where: { id: postId },
+      include: {
+        suggestions: {
+          include: {
+            suggestedBy: true,
+            suggestedObject: {
+              include: {
+                object: true, // Inclure les détails des objets associés
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!postWithSuggestions) {
+      throw new Error(`Post with id ${postId} not found`);
+    }
+
+    return postWithSuggestions.suggestions;
+  } catch (error:any) {
+    console.error(`Error fetching suggestions for post ${postId}: ${error.message}`);
+    throw new Error('An error occurred while fetching suggestions.');
+  }
+}

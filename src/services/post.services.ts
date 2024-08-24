@@ -86,8 +86,9 @@ export const getAllPostService = async (page: number, limit: number) => {
       prevPage: page > 0 ? page - 1 : null,
       hasMore: (page + 1) * limit < totalPosts,
     };
-  } catch (error) {
+  } catch (error:any) {
     console.error(error);
+    console.log(error.message);
     throw new Error('An error occurred while fetching posts.');
   }
 };
@@ -272,3 +273,4 @@ export const getExploreItemPostService = async (userId: number) => {
     throw error;
   }
 };
+

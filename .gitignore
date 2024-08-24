@@ -2,4 +2,5 @@
 .env
 prisma/migrations
 /.vscode
+/.idea4
 /.idea

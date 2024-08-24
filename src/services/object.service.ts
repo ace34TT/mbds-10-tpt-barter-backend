@@ -84,7 +84,7 @@ export const getObjectByOwner = async (ownerId: number, page: number, limit: num
 export const getObjectByIdAllData = async (id: number) => {
   try {
     const object = await prisma.object.findUnique({
-      where: { id: id },
+      where: { id: id,deletedAt: null  },
       include: {
         category: true,
         owner: true,
@@ -104,10 +104,10 @@ export const getObjectByIdAllData = async (id: number) => {
   }
 };
 
-/*export const getObjectByOwner = async (id: number) => {
+export const getObjectByOwnerList = async (id: number) => {
   try {
     const object = await prisma.object.findMany({
-      where: { ownerId: id },
+      where: { ownerId: id ,deletedAt: null },
       include: {
         category: true,
         owner: true,
@@ -125,9 +125,9 @@ export const getObjectByIdAllData = async (id: number) => {
     console.error("Error retrieving object by ID:", error);
     throw new Error("Failed to retrieve object");
   }
-};*/
+};
 
-export const getObjectsPagin = async (page: number, limit: number) => {
+export const getObjectsPagin = async (page: number, limit: number, ownerId:number) => {
     try {
       const startIndex = (page - 1) * limit;
       console.log(startIndex);
@@ -144,6 +144,7 @@ export const getObjectsPagin = async (page: number, limit: number) => {
           posts: true,
           suggestions: true,
         },
+        where: { deletedAt: null,ownerId:ownerId },
         orderBy: {
           createdAt: 'desc',
         },
@@ -213,7 +214,7 @@ export const updateObject = async (
     categoryId?: number;
     description?: string;
     ownerId?: number;
-    photos : string[];
+    photos? : string[];
   }
 ) => {
   return prisma.object.update({

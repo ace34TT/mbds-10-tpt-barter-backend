@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import {
   sendSuggestionService,
   updateSuggestionStatusService,
+  addSuggestionToPostService,
+  getPostSuggestions
 } from "../services/suggestion.services";
 
 export const sendSuggestionHandler = async (req: Request, res: Response) => {
@@ -45,3 +47,35 @@ export const updateSuggestionStatusHandler = async (
     });
   }
 };
+
+
+export const addSuggestionToPost = async (req: Request, res: Response) => {
+  try {
+    const postId = parseInt(req.params.id);
+    const objectIds = req.body.objects;
+    const suggestedById = req.body.suggestedById;
+    // Créez la suggestion
+    const addSuggest = await addSuggestionToPostService (postId,objectIds,suggestedById);
+    return res.status(200).json(addSuggest);
+  } catch (error:any) {
+    console.error('Error adding suggestion to post:', error.message);
+    throw error;
+  }
+};
+
+export const  getSuggestions = async (req: Request, res: Response) =>  {
+  const postId = parseInt(req.params.id, 10);
+
+  if (isNaN(postId)) {
+    return res.status(400).json({ error: 'Invalid post ID' });
+  }
+
+  try {
+    const suggestions = await getPostSuggestions(postId);
+    res.json({data:suggestions});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch suggestions' });
+  }
+}
+

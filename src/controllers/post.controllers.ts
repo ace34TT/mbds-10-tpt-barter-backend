@@ -6,7 +6,7 @@ import {
   getUserPostService,
   updatePostService,
   getPostService,
-  getAllPostService
+  getAllPostService,
 } from "../services/post.services";
 import { Request, Response } from "express";
 
@@ -29,7 +29,9 @@ export const getActivePostsHandler = async (req: Request, res: Response) => {
 
 export const getPostHandler = async (req: Request, res: Response) => {
   try {
+    console.log(req.params.id);
     const postId = parseInt(req.params.id);
+
     const post = await getPostService(postId);
     if (post) {
       return res.status(200).json(post);
@@ -50,8 +52,8 @@ export const getPostsPaginated = async (req: Request, res: Response) => {
     const result = await getAllPostService(page, limit);
     
     return res.status(200).json(result);
-  } catch (error) {
-    console.error(error);
+  } catch (error:any) {
+    console.log(error.message);
     res.status(500).json({ error: 'Failed to fetch posts' });
   }
 };
@@ -71,6 +73,7 @@ export const createPostHandler = async (req: Request, res: Response) => {
 export const deletedPostHandler = async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.id);
+    console.log(postId);
     const deletedPost = await deletePostService(postId);
     return res.status(200).json(deletedPost);
   } catch (error) {
