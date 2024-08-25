@@ -1,14 +1,9 @@
 import express from "express";
-import {
-    createUser,
-    getUsers,
-    getUserById,
-    updateUser,
-    deleteUser,
-    setUserPlayerIdHandler
-} from "../controllers/user.controllers";
+import { createUser,getUsers,getUserById,updateUser,deleteUser, getUsersAdminHandler, setUserPlayerIdHandler } from "../controllers/user.controllers";
 
 const router = express.Router();
+// admin
+router.get('/admin', getUsersAdminHandler);
 
 router.post('/', createUser);
 router.get('/', getUsers);

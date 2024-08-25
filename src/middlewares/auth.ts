@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 interface DecodedToken {
   userId: string;
   email: string;
+  username: string;
 }
 
 // Ajouter les propriétés personnalisées à l'interface Request

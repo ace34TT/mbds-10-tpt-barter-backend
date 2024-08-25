@@ -106,12 +106,29 @@ async function main() {
     console.error("Error inserting objects:", error);
   }
 
-  // Fetch created objects
+  const latRange = { min: -25.6014, max: -11.9515 };
+  const lonRange = { min: 43.2203, max: 50.4862 };
+
+  function getRandomLatitude() {
+    return Math.random() * (latRange.max - latRange.min) + latRange.min;
+  }
+
+  function getRandomLongitude() {
+    return Math.random() * (lonRange.max - lonRange.min) + lonRange.min;
+  }
+
+  function getRandomAddress() {
+    return `${faker.address.streetName()} ${faker.random.numeric(3)}, ${faker.address.city()}, Madagascar`;
+  }
+
   const createdObjects = await prisma.object.findMany();
   // Create Posts
   const posts = Array.from({ length: 30 }, () => ({
     authorId: faker.helpers.arrayElement(createdUsers).id,
     description: faker.lorem.paragraph(),
+    latitude: getRandomLatitude(),
+    longitude: getRandomLongitude(),
+    address:getRandomAddress()
   }));
 
   try {

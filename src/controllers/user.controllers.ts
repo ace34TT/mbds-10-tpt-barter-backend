@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../configs/prisma.configs'; 
+import { getUsersWithPagination } from '../services/user.services';
 
 // Créer un nouvel utilisateur
 export const createUser = async (req: Request, res: Response) => {
@@ -26,7 +27,7 @@ export const setUserPlayerIdHandler = async (req: Request, res: Response) => {
     console.log("setting userId and playerId" , userId, playerId);
     if (!userId ||!playerId) {return res.status(400).json({ error: 'Veuillez fournir'})}
     const user = await prisma.user.update({
-      data: {playerId},
+      data: {playerId: playerId},
       where: {id: Number(userId)},
     });
     res.json(user);
@@ -74,6 +75,7 @@ export const updateUser = async (req: Request, res: Response) => {
     });
     res.json({message:"mis à jour effectué" ,user});
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error});
   }
 };
@@ -88,5 +90,43 @@ export const deleteUser = async (req: Request, res: Response) => {
     res.json({ message: 'Utilisateur supprimé avec succès' });
   } catch (error) {
     res.status(500).json({ error });
+  }
+};
+
+
+// ADMIN
+export const getUsersAdminHandler = async (req: Request, res: Response) => {
+  
+  try{
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const email = req.query.email as string || undefined;
+    const roleId = parseInt(req.query.roleId as string) || undefined;
+
+    const users = await getUsersWithPagination(page, limit, email, roleId);
+    const totalUsers = await prisma.user.count({
+      where: {
+        ...(email && {
+          OR: [
+            { email: { contains: email, mode: 'insensitive' } },
+            { name: { contains: email, mode: 'insensitive' } },
+            { username: { contains: email, mode: 'insensitive' } },
+          ],
+        }),
+        ...(roleId && { roleId: roleId }), // Add roleId filter
+      },
+    });
+    return res.status(200).json({
+      data: users,
+      meta: {
+        page,
+        limit,
+        total: totalUsers,
+        totalPages: Math.ceil(totalUsers / limit),
+      },
+    });
+  } catch(error) {
+    console.log(error);
+    return res.status(500).json({ error: "Failed to fetch users" });
   }
 };

@@ -1,9 +1,9 @@
 import { IObjetReport, IReport, IUserReport, Report } from "../models/report.models";
 
-export const addUserReport = async (usermakereport: IUserReport, userReport: IUserReport, motif: string): Promise<IReport> => {
+export const addUserReport = async (userMakeReport: IUserReport, userReport: IUserReport, motif: string): Promise<IReport> => {
     try {
         const newReport = new Report({
-            usermakereport,
+            userMakeReport,
             userReport,
             motif,
             dateCreation: new Date(),
@@ -15,10 +15,10 @@ export const addUserReport = async (usermakereport: IUserReport, userReport: IUs
     }
 };
 
-export const addPostReport = async (usermakereport: IUserReport, objetReport: IObjetReport, motif: string): Promise<IReport> => {
+export const addPostReport = async (userMakeReport: IUserReport, objetReport: IObjetReport, motif: string): Promise<IReport> => {
     try {
         const newReport = new Report({
-            usermakereport,
+            userMakeReport,
             objetReport,
             motif,
             dateCreation: new Date(),
@@ -42,7 +42,7 @@ export const updatePostReport = async (id: string, statut: string): Promise<IRep
     return await Report.findByIdAndUpdate(id, { statut, updatedAt: new Date() }, { new: true });
 };
 
-export const getReports = async (type?: 'user' | 'post'): Promise<IReport[]> => {
+export const getReports = async (type?: 'user' | 'post', statut?: 'pending' | 'rejected' | 'accepted'): Promise<IReport[]> => {
     const query: any = {};
     if (type) {
         if (type === 'user') {
@@ -50,10 +50,13 @@ export const getReports = async (type?: 'user' | 'post'): Promise<IReport[]> => 
         } else if (type === 'post') {
             query.objetReport = { $exists: true };
         }
-        return await Report.find(query);
-    } else {
-        return await Report.find();
     }
+
+    if(statut){
+        query.statut = statut;
+    }
+    
+    return await Report.find(query);
 };
 
 export const getUserReports = async (userid: number): Promise<IReport[]> => {
@@ -68,4 +71,40 @@ export const getUserReports = async (userid: number): Promise<IReport[]> => {
 
 export const getReportById = async (id: string): Promise<IReport | null> => {
     return await Report.findById(id);
+};
+
+
+// admin
+export const getReportsAdmin = async (type?: 'user' | 'post', statut?: 'pending' | 'rejected' | 'accepted',  page: number = 1, limit: number = 10): Promise<{ data: IReport[], meta: { page: number, limit: number, total: number, totalPages: number } }> => {
+    const query: any = {};
+    if (type) {
+        if (type === 'user') {
+            query.userReport = { $exists: true };
+        } else if (type === 'post') {
+            query.objetReport = { $exists: true };
+        }
+    }
+
+    if(statut){
+        query.statut = statut;
+    }
+
+    // Calculate total number of reports
+    const totalReports = await Report.countDocuments(query);
+
+    // Fetch paginated reports
+    const reports = await Report.find(query)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+    
+    return {
+        data: reports,
+        meta: {
+            page,
+            limit,
+            total: totalReports,
+            totalPages: Math.ceil(totalReports / limit),
+        },
+    };
 };

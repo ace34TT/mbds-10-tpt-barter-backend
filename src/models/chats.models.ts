@@ -13,7 +13,7 @@ const MessageSchema = new Schema({
 });
 
 const UserSchema = new Schema({
-  id: { type: String },
+  id: { type: Number },
   name: { type: String },
   username: { type: String },
   email: { type: String },

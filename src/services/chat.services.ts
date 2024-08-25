@@ -1,5 +1,5 @@
-import {Chat} from "./../models/chats.models";
-import {IChat, IMessage} from "../shared/interfaces/mongoModels.interfaces";
+import { Chat } from "./../models/chats.models";
+import { IChat, IMessage } from "../shared/interfaces/mongoModels.interfaces";
 
 export const createChatService = async (chat: IChat) => {
   try {
@@ -11,6 +11,7 @@ export const createChatService = async (chat: IChat) => {
     await _chat.save();
     return _chat;
   } catch (error: any) {
+    console.log(error.message);
     throw new Error(error);
   }
 };
@@ -23,6 +24,7 @@ export const continueChatService = (chatId: string, message: IMessage) => {
     );
     return chat;
   } catch (error: any) {
+    console.log(error.message);
     throw new Error(error);
   }
 };
@@ -31,10 +33,7 @@ export const getChatByUserService = async (userId: string) => {
     return await Chat.aggregate([
       {
         $match: {
-          $or: [
-            { "sender.id": userId },
-            { "receiver.id": userId },
-          ],
+          $or: [{ "sender.id": userId }, { "receiver.id": userId }],
         },
       },
       {
@@ -50,10 +49,26 @@ export const getChatByUserService = async (userId: string) => {
   }
 };
 
+export const getChatByUserServiceHandler = (userId: string) => {
+  try {
+    const chats = Chat.find({
+      $or: [
+        { "sender.id": userId },
+        { "receiver.id": userId }  // Ajouter une autre condition ici
+      ]
+    }).exec();
+    return chats;
+  } catch (error: any) {
+    console.log(error.message);
+    throw new Error(error);
+  }
+};
+
+
 
 export const getChatByIdService = async (chatId: string) => {
   try {
-    console.log("finding chat with " , chatId)
+    console.log("finding chat with ", chatId);
     return await Chat.findById(chatId).exec();
   } catch (error: any) {
     throw new Error(error);

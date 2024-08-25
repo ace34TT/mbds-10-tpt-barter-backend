@@ -36,3 +36,21 @@ export const categoryTitleExists = async (title: string) => {
     });
     return !!category;
 };
+
+
+
+
+// admin
+export const getCategoriesWithPagination = async (page: number, limit: number, title?: string) => {
+    const skip = (page - 1) * limit;
+    return prisma.category.findMany({
+        skip,
+        take: limit,
+        where: {
+            title: title ? {
+              contains: title,
+              mode: 'insensitive', // Optionnel
+            } : undefined,
+          },
+    });
+};

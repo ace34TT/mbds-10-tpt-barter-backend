@@ -8,7 +8,7 @@ export const messageSchema = z.object({
 });
 
 const userSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   name: z.string(),
   username: z.string(),
   email: z.string().email(),

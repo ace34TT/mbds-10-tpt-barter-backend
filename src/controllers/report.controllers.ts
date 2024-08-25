@@ -5,13 +5,14 @@ import mongoose from "mongoose";
 
 export const addUserReportHandler = async (req: Request, res: Response) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   try {
-    const { usermakereport, userReport, motif } = req.body;
-    const report = await reportService.addUserReport(usermakereport, userReport, motif);
+    const { userMakeReport, userReport, motif } = req.body;
+    const report = await reportService.addUserReport(userMakeReport, userReport, motif);
     res.status(201).json(report);
   } catch (error) {
     console.log(error);
@@ -24,10 +25,9 @@ export const addPostReportHandler = async (req: Request, res: Response) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-
   try {
-    const { usermakereport, objetReport, motif } = req.body;
-    const report = await reportService.addPostReport(usermakereport, objetReport, motif);
+    const { userMakeReport, objetReport, motif } = req.body;
+    const report = await reportService.addPostReport(userMakeReport, objetReport, motif);
     res.status(201).json(report);
   } catch (error) {
     res.status(500).json(error);
@@ -109,8 +109,8 @@ export const updatePostReportHandler = async (req: Request, res: Response) => {
 
 export const getReportsHandler = async (req: Request, res: Response) => {
   try {
-    const { type } = req.query;
-    const reports = await reportService.getReports(type as 'user' | 'post');
+    const { type, statut } = req.query;
+    const reports = await reportService.getReports(type as 'user' | 'post', statut as 'pending' | 'rejected' | 'accepted');
     res.status(200).json(reports);
   } catch (error) {
     res.status(500).json(error);
@@ -150,5 +150,19 @@ export const getReportByIdHandler = async (req: Request, res: Response) => {
     }
   } catch (error) {
     res.status(500).json({ message: error });
+  }
+};
+
+
+// admin
+export const getReportsAdminHandler = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const { type, statut } = req.query;
+    const reports = await reportService.getReportsAdmin(type as 'user' | 'post', statut as 'pending' | 'rejected' | 'accepted', page, limit);
+    res.status(200).json(reports);
+  } catch (error) {
+    res.status(500).json(error);
   }
 };

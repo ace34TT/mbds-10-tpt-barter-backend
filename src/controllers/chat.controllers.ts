@@ -1,21 +1,24 @@
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import {
   continueChatService,
   createChatService,
   deleteChatByIdService,
-  findChatByParticipantsService, getChatByIdService,
+  findChatByParticipantsService,
   getChatByUserService,
+  getChatByIdService,
+  getChatByUserServiceHandler
 } from "../services/chat.services";
-import {chatSchema, messageSchema} from "../shared/schemas/chat.schema";
-import {z} from "zod";
-import {IMessage} from "../shared/interfaces/mongoModels.interfaces";
-import {socketManager} from "../configs/socket.configs";
-import {Chat} from "../models/chats.models";
-import {firebaseAdmin} from "../configs/firebase.config";
+import { chatSchema, messageSchema } from "../shared/schemas/chat.schema";
+import { z } from "zod";
+import { IMessage } from "../shared/interfaces/mongoModels.interfaces";
+import { socketManager } from "../configs/socket.configs";
+import { Chat } from "../models/chats.models";
+import { firebaseAdmin } from "../configs/firebase.config";
 
 export const createChatHandler = async (req: Request, res: Response) => {
   try {
-    const {sender, receiver, messages} = req.body;
+    const { sender, receiver, messages } = req.body;
+    console.log(req.body);
     const convertedMessages = messages.map((message: IMessage) => ({
       ...message,
       timestamp: new Date(message.timestamp), // Convert string to Date object
@@ -31,7 +34,8 @@ export const createChatHandler = async (req: Request, res: Response) => {
       message: "Chats get is working",
       chat,
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.log(error.message);
     if (error instanceof z.ZodError) {
       res.status(400).json({
         message: "Validation failed",
@@ -44,136 +48,177 @@ export const continueChatHandler = async (req: Request, res: Response) => {
   try {
     const chatId = req.params.id;
     const message = req.body;
+    console.log(message);
     message.timestamp = new Date(message.timestamp);
     messageSchema.parse(message);
+
     if (!chatId || !message) {
-      return res.status(400).json({message: "Invalid chat id or message"});
+      return res.status(400).json({ message: "Invalid chat id or message" });
     }
     const updatedChat = await continueChatService(chatId, message).exec();
     const chat = await Chat.findById(chatId).exec();
     // send realtime answer to the participants
     // Check if recipient is online using their database ID
-    console.log(socketManager.getUsers())
-    console.log("user", message.author)
-    const author: "sender" | "receiver" = message.author === "sender" ? "receiver" : "sender";
+    console.log(socketManager.getUsers());
+    console.log("user", message.author);
+    const author: "sender" | "receiver" =
+      message.author === "sender" ? "receiver" : "sender";
     console.log(chat?.[author]!.id);
-    const recipientSocketId = socketManager.getUsers().get(chat?.[author]!.id!.toString()!);
+    const recipientSocketId = socketManager
+      .getUsers()
+      .get(chat?.[author]!.id!.toString()!);
     // log reciprocation id
-    console.log("recipient socket id is : ", recipientSocketId)
+    console.log("recipient socket id is : ", recipientSocketId);
     if (recipientSocketId) {
-      socketManager.getIo().to(recipientSocketId).emit('new-message', {
+      socketManager.getIo().to(recipientSocketId).emit("new-message", {
         chatId,
         message,
       });
-      message.deliveryStatus = 'delivered';
+      message.deliveryStatus = "delivered";
     } else {
-      message.deliveryStatus = 'sent'; // User is offline
+      message.deliveryStatus = "sent"; // User is offline
     }
     const notificationData = {
       notification: {
         title: "Hello",
-        body: "this is a notification test"
+        body: "this is a notification test",
       },
       data: {},
-      token: "cy0OUIjrSvehnJjIYNwW76:APA91bGBq5aqNBwFy3ntcNEqRXaoqGHRpbrG8Kwwshg3_qlCRFjgLCD4u04SJAvwTJejQFQEGEb_MUhSnY3gSmsDa26xSnYpXYG6zdN1CpaGB5auy-IItqKpQGIeWEQedDBd31lM3Lb8"
+      token:
+        "cy0OUIjrSvehnJjIYNwW76:APA91bGBq5aqNBwFy3ntcNEqRXaoqGHRpbrG8Kwwshg3_qlCRFjgLCD4u04SJAvwTJejQFQEGEb_MUhSnY3gSmsDa26xSnYpXYG6zdN1CpaGB5auy-IItqKpQGIeWEQedDBd31lM3Lb8",
     };
 
-    firebaseAdmin.messaging().send(notificationData).then((response) => {
-      console.log("notification send")
-      console.log(response)
-    }).catch((error: any) => {
-      console.log(error)
-    });
-
+    firebaseAdmin
+      .messaging()
+      .send(notificationData)
+      .then((response) => {
+        console.log("notification send");
+        console.log(response);
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
 
     return res
-        .status(200)
-        .json({message: "Chat updated successfully", chat: updatedChat});
+      .status(200)
+      .json({ message: "Chat updated successfully", chat: updatedChat });
   } catch (error: any) {
-    console.log(error)
+    console.log(error);
+    console.log(error.message);
     if (error instanceof z.ZodError) {
       res.status(400).json({
         message: "Validation failed",
         errors: error.errors,
       });
       if (error.message.includes("not found")) {
-        res.status(404).json({message: error.message});
+        res.status(404).json({ message: error.message });
       } else {
         res
-            .status(500)
-            .json({message: "An error occurred while updating the chat"});
+          .status(500)
+          .json({ message: "An error occurred while updating the chat" });
       }
     }
   }
 };
 
-
 export const deleteChatHandler = async (req: Request, res: Response) => {
   try {
     const chatId = req.params.id;
     if (!chatId) {
-      return res.status(400).json({message: "Invalid chat id"});
+      return res.status(400).json({ message: "Invalid chat id" });
     }
     const deletedChat = deleteChatByIdService(chatId);
-    return res.status(200).json({message: "Chat deleted successfully"});
+    return res.status(200).json({ message: "Chat deleted successfully" });
   } catch (error: any) {
     if (error.message.includes("not found")) {
-      res.status(404).json({message: error.message});
+      res.status(404).json({ message: error.message });
     } else {
       res
-          .status(500)
-          .json({message: "An error occurred while deleting the chat"});
+        .status(500)
+        .json({ message: "An error occurred while deleting the chat" });
     }
   }
 };
 export const getChatByIdHandler = async (req: Request, res: Response) => {
   try {
     const chatId = req.params.id;
+    console.log(chatId);
     if (!chatId) {
-      return res.status(400).json({message: "Invalid chat id"});
+      return res.status(400).json({ message: "Invalid chat id" });
     }
     const chat = await getChatByIdService(chatId);
     return res.status(200).json(chat);
   } catch (error: any) {
+    console.log(error.message);
     if (error.message.includes("not found")) {
-      res.status(404).json({message: error.message});
+      res.status(404).json({ message: error.message });
     } else {
       res
-          .status(500)
-          .json({message: "An error occurred while getting the chat"});
+        .status(500)
+        .json({ message: "An error occurred while getting the chat" });
     }
   }
 };
 export const getChatsByUserHandler = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.params.id;
+    console.log("User id " + userId);
+
     if (!userId) {
-      return res.status(400).json({message: "Invalid user id"});
+      return res.status(400).json({ message: "Invalid user id" });
     }
+
+    Chat.aggregate([
+      { $match: { $or: [{ "sender.id": userId }, { "receiver.id": userId }] } },
+    ])
+      .then(console.log)
+      .catch(console.error);
+
     const chats = await getChatByUserService(userId);
-    console.log(chats)
+    console.log(chats);
     return res.status(200).json(chats);
   } catch (error: any) {
+    console.log(error);
     if (error.message.includes("not found")) {
-      res.status(404).json({message: error.message});
+      res.status(404).json({ message: error.message });
     } else {
       res
-          .status(500)
-          .json({message: "An error occurred while getting the chats"});
+        .status(500)
+        .json({ message: "An error occurred while getting the chats" });
+    }
+  }
+};
+
+export const getChatsByUserIdHandler = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid user id" });
+    }
+    const chats = await getChatByUserServiceHandler(userId);
+    return res.status(200).json(chats);
+  } catch (error: any) {
+    console.log(error);
+    if (error.message.includes("not found")) {
+      res.status(404).json({ message: error.message });
+    } else {
+      res
+        .status(500)
+        .json({ message: "An error occurred while getting the chats" });
     }
   }
 };
 
 export const getChatByParticipantsHandler = async (
-    req: Request,
-    res: Response
+  req: Request,
+  res: Response
 ) => {
   try {
-    const {senderId, receiverId} = req.params;
+    const { senderId, receiverId } = req.params;
     if (!senderId || !receiverId)
       return res
-          .status(400)
-          .json({message: "senderId and receiverId are required"});
+        .status(400)
+        .json({ message: "senderId and receiverId are required" });
     const chat = await findChatByParticipantsService(senderId, receiverId);
     if (!chat)
       return res.status(400).json({
@@ -184,4 +229,3 @@ export const getChatByParticipantsHandler = async (
     return res.status(500).json(error);
   }
 };
-
