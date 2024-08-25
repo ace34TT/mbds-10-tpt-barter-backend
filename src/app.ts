@@ -18,7 +18,7 @@ import { RoleRoutes } from "./routes/role.routes";
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:4200"],
+  origin: ["http://localhost:4200","https://tpt-barter-app.netlify.app"],
   optionsSuccessStatus: 200,
 };
 
